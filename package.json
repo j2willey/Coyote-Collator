@@ -6,7 +6,13 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "db:reset": "node scripts/reset_scores.js",
+    "db:nuke": "node scripts/nuke_db.js",
+    "db:inspect": "node scripts/inspect_scores.js",
+    "roster:inspect": "node scripts/inspect_roster.js",
+    "db:seed": "node scripts/seed_dummy_scores.js",
+    "import:roster": "node scripts/import_roster.js"
   },
   "dependencies": {
     "better-sqlite3": "^9.0.0",

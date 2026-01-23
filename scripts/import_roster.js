@@ -9,8 +9,8 @@ const __dirname = path.dirname(__filename);
 // Paths
 const dataDir = path.join(__dirname, '..', 'data');
 const dbPath = path.join(dataDir, 'camporee.db');
-const troopPath = path.join(__dirname, 'troop.csv');
-const patrolPath = path.join(__dirname, 'patrol.csv');
+const troopPath = path.join(__dirname, '..', 'config', 'troop.csv');
+const patrolPath = path.join(__dirname, '..', 'config', 'patrol.csv');
 
 // Connect to Database
 if (!fs.existsSync(dataDir)) {
