@@ -6,7 +6,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./data:/app/data
+      - .:/app                 # Maps your code (Good)
+      - /app/node_modules
     restart: unless-stopped
     environment:
       - NODE_ENV=production
