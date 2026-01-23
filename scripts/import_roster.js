@@ -1,91 +1,95 @@
 import fs from 'fs';
 import path from 'path';
-import Database from 'better-sqlite3';
 import { fileURLToPath } from 'url';
+import Database from 'better-sqlite3';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Paths
-const csvPath = path.join(__dirname, 'Roster.csv');
-const dbPath = path.join(__dirname, '..', 'data', 'camporee.db');
+const dataDir = path.join(__dirname, '..', 'data');
+const dbPath = path.join(dataDir, 'camporee.db');
+const troopPath = path.join(__dirname, 'troop.csv');
+const patrolPath = path.join(__dirname, 'patrol.csv');
 
-// Check files
-if (!fs.existsSync(csvPath)) {
-    console.error(`Error: Roster file not found at ${csvPath}`);
-    process.exit(1);
+// Connect to Database
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
 }
-
-// Connect to DB
-console.log(`opening database at ${dbPath}`);
 const db = new Database(dbPath);
 
-// Prepare statement
-// We use INSERT OR REPLACE to update existing records if IDs match
-const insert = db.prepare(`
+console.log(`Connected to database at ${dbPath}`);
+
+// Prepare Statement
+const insertStmt = db.prepare(`
     INSERT OR REPLACE INTO entities (id, name, type, troop_number)
     VALUES (?, ?, ?, ?)
 `);
 
-// Simple CSV Parser (handling quoted values roughly)
-function parseCSVLine(text) {
-    const re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
-
-    // Simple split if no quotes
-    if (!text.includes('"')) {
-        return text.split(',').map(v => v.trim());
+// Helper to read CSV lines excluding header
+function readCsvLines(filePath) {
+    if (!fs.existsSync(filePath)) {
+        console.error(`File not found: ${filePath}`);
+        return [];
     }
-
-    // Regex for splitting with quotes support
-    // This is a basic implementation
-    const matches = text.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
-    if (!matches) return [];
-    return matches.map(m => m.replace(/^"|"$/g, '').trim().replace(/""/g, '"'));
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    return lines.slice(1); // Skip header
 }
 
+const importData = db.transaction(() => {
+    let troopCount = 0;
+    let patrolCount = 0;
+
+    // Process Troops
+    const troopLines = readCsvLines(troopPath);
+    for (const line of troopLines) {
+        // Troop ID, Troop (Name)
+        // Example: 0013,T13
+        const cols = line.split(',');
+        if (cols.length < 2) continue;
+
+        const troopIdStr = cols[0].trim();
+        const name = cols[1].trim();
+
+        const id = parseInt(troopIdStr, 10);
+        if (isNaN(id)) continue;
+
+        // troop_number: Parse Troop ID as string (or integer) to store the number.
+        // Convert to int then string to normalize (remove leading zeros)
+        const troopNumber = id.toString();
+
+        insertStmt.run(id, name, 'troop', troopNumber);
+        troopCount++;
+    }
+
+    // Process Patrols
+    const patrolLines = readCsvLines(patrolPath);
+    for (const line of patrolLines) {
+        // Patrol ID, Troop (Number), Patrol (Name), ...
+        // Example: 1001,13,Skeleton Fishing,5,,,
+        const cols = line.split(',');
+        if (cols.length < 3) continue;
+
+        const patrolIdStr = cols[0].trim();
+        const troopNumStr = cols[1].trim();
+        const name = cols[2].trim();
+
+        const id = parseInt(patrolIdStr, 10);
+        if (isNaN(id)) continue;
+
+        insertStmt.run(id, name, 'patrol', troopNumStr);
+        patrolCount++;
+    }
+
+    return { troopCount, patrolCount };
+});
+
 try {
-    const fileContent = fs.readFileSync(csvPath, 'utf-8');
-    const lines = fileContent.split(/\r?\n/).filter(l => l.trim().length > 0);
-
-    if (lines.length < 2) {
-        console.log('CSV is empty or only has header');
-        process.exit(0);
-    }
-
-    // Determine indices from header
-    const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase());
-    const idIdx = headers.findIndex(h => h.includes('id'));
-    const troopIdx = headers.findIndex(h => h === 'troop');
-    const patrolIdx = headers.findIndex(h => h === 'patrol');
-
-    if (idIdx === -1 || troopIdx === -1 || patrolIdx === -1) {
-        console.error('Error: Could not find required columns (Patrol ID, Troop, Patrol)');
-        console.log('Found headers:', headers);
-        process.exit(1);
-    }
-
-    const transaction = db.transaction((rows) => {
-        let count = 0;
-        for (const line of rows) {
-            const cols = parseCSVLine(line);
-            if (cols.length < 3) continue;
-
-            const id = parseInt(cols[idIdx], 10);
-            const troop = cols[troopIdx];
-            const name = cols[patrolIdx];
-            const type = 'patrol';
-
-            if (!isNaN(id)) {
-                insert.run(id, name, type, troop);
-                count++;
-            }
-        }
-        return count;
-    });
-
-    const insertedCount = transaction(lines.slice(1));
-    console.log(`Successfully imported ${insertedCount} entities.`);
-
+    const results = importData();
+    console.log(`Imported ${results.troopCount} Troops`);
+    console.log(`Imported ${results.patrolCount} Patrols`);
 } catch (err) {
-    console.error('Import failed:', err);
+    console.error('Error importing roster:', err);
+    process.exit(1);
 }

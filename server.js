@@ -62,6 +62,49 @@ app.use(express.static('public'));
 
 // --- API ROUTES ---
 
+// Get Games Configuration
+app.get('/games.json', (req, res) => {
+  try {
+    const configDir = path.join(__dirname, 'config');
+    const commonPath = path.join(configDir, 'common.json');
+    const gamesDir = path.join(configDir, 'games');
+
+    // Read common scoring
+    const commonScoring = JSON.parse(fs.readFileSync(commonPath, 'utf-8'));
+
+    // Read games
+    const games = [];
+    if (fs.existsSync(gamesDir)) {
+      const files = fs.readdirSync(gamesDir);
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          const content = fs.readFileSync(path.join(gamesDir, file), 'utf-8');
+          games.push(JSON.parse(content));
+        }
+      }
+    }
+
+    // Sort games by id
+    games.sort((a, b) => {
+      if (a.id < b.id) return -1;
+      if (a.id > b.id) return 1;
+      return 0;
+    });
+
+    res.json({
+      metadata: {
+        version: "1.0",
+        generated_at: new Date().toISOString()
+      },
+      common_scoring: commonScoring,
+      games: games
+    });
+  } catch (err) {
+    console.error('Error serving games.json:', err);
+    res.status(500).json({ error: 'Failed to load configuration' });
+  }
+});
+
 // Get Roster
 app.get('/api/entities', (req, res) => {
   const rows = db.prepare('SELECT * FROM entities ORDER BY troop_number, name').all();

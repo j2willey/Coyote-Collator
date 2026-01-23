@@ -1,0 +1,39 @@
+{
+  "id": "game_01_boil",
+  "name": "Game 1: Boiling the Ocean",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "matches_used",
+      "label": "Matches Used (Count)",
+      "type": "number",
+      "min": 0,
+      "max": 50
+    },
+    {
+      "id": "boil_time",
+      "label": "Time to Boil",
+      "type": "time_mm_ss",
+      "required": true
+    },
+    {
+      "id": "friction_fire_bonus",
+      "label": "Friction Fire Bonus",
+      "type": "select",
+      "options": [
+        "None",
+        "Char/Powder Only",
+        "Smoke",
+        "Ember Created",
+        "Ignited Tinder",
+        "Ignited Kindling"
+      ]
+    },
+    {
+      "id": "ten_essentials_matches",
+      "label": "10 Essentials: Matches",
+      "type": "boolean",
+      "defaultValue": true
+    }
+  ]
+}

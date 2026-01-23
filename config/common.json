@@ -1,0 +1,30 @@
+[
+  {
+    "id": "patrol_flag",
+    "label": "Patrol Flag Displayed?",
+    "type": "boolean",
+    "defaultValue": true
+  },
+  {
+    "id": "patrol_yell",
+    "label": "Patrol Yell Performed?",
+    "type": "boolean",
+    "defaultValue": true
+  },
+  {
+    "id": "patrol_spirit",
+    "label": "Patrol Spirit (0-5)",
+    "type": "range",
+    "min": 0,
+    "max": 5,
+    "defaultValue": 5
+  },
+  {
+    "id": "unscoutlike",
+    "label": "Un-Scout-like Behavior (Penalty)",
+    "type": "number",
+    "min": 0,
+    "max": 100,
+    "helperText": "Enter POSITIVE number to deduct points"
+  }
+]
