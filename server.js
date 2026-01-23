@@ -138,6 +138,42 @@ app.post('/api/submit-score', (req, res) => {
   }
 });
 
+// Admin All Data
+app.get('/api/admin/all-data', (req, res) => {
+  try {
+    const rows = db.prepare(`
+        SELECT s.uuid, s.game_id, s.timestamp, e.name as entity_name, e.troop_number, e.type as entity_type, s.score_payload
+        FROM scores s
+        JOIN entities e ON s.entity_id = e.id
+    `).all();
+
+    const stats = {};
+    const parsedScores = rows.map(row => {
+      // Update stats
+      if (!stats[row.game_id]) stats[row.game_id] = 0;
+      stats[row.game_id]++;
+
+      // Parse payload
+      let payload = {};
+      try {
+        payload = JSON.parse(row.score_payload);
+      } catch (e) {
+        console.error('Failed to parse payload for', row.uuid);
+      }
+      return { ...row, score_payload: payload };
+    });
+
+    res.json({
+        stats,
+        scores: parsedScores
+    });
+
+  } catch (err) {
+    console.error('Admin data error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 // Export CSV
 app.get('/api/export', (req, res) => {
   try {
