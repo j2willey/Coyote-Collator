@@ -1,0 +1,22 @@
+{
+  "id": "g6_blindmindfield",
+  "name": "Game 6. Blind Mindfield",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    },
+    {
+      "id": "scouts_moving",
+      "label": "Scouts Moving",
+      "type": "boolean"
+    },
+    {
+      "id": "hits",
+      "label": "Hits",
+      "type": "boolean"
+    }
+  ]
+}

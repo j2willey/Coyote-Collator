@@ -1,0 +1,17 @@
+{
+  "id": "g_walkinga",
+  "name": "Game ?. Walking A Frame",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    },
+    {
+      "id": "time_in_seconds",
+      "label": "Time in Seconds",
+      "type": "time_mm_ss"
+    }
+  ]
+}

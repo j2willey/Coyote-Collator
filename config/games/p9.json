@@ -1,0 +1,22 @@
+{
+  "id": "p9",
+  "name": "Game 9.  Hook Line and Stretcher",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    },
+    {
+      "id": "stretcher_runs_distance_laps_decimals_ok",
+      "label": "Stretcher Runs/ Distance (laps, Decimals OK)",
+      "type": "number"
+    },
+    {
+      "id": "bonus_for_scout_sea_worthy_puns_jokes",
+      "label": "BONUS for Scout Sea worthy Puns/Jokes",
+      "type": "number"
+    }
+  ]
+}

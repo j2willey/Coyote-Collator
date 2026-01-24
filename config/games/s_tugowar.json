@@ -1,0 +1,12 @@
+{
+  "id": "s_tugowar",
+  "name": "S TugOWar",
+  "type": "troop",
+  "fields": [
+    {
+      "id": "points",
+      "label": "Points",
+      "type": "number"
+    }
+  ]
+}

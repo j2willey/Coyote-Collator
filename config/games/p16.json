@@ -1,0 +1,17 @@
+{
+  "id": "p16",
+  "name": "Game 16  Tangled Treasure",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    },
+    {
+      "id": "puzzle_points_completed",
+      "label": "Puzzle Points Completed",
+      "type": "number"
+    }
+  ]
+}

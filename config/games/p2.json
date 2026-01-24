@@ -1,0 +1,12 @@
+{
+  "id": "p2",
+  "name": "Game 2. Kraken the First Aid Code",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "time",
+      "label": "Time",
+      "type": "time_mm_ss"
+    }
+  ]
+}

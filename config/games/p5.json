@@ -1,0 +1,52 @@
+{
+  "id": "p5",
+  "name": "Game 5.  Catch Fish Fry Fly",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "mix_batter",
+      "label": "Mix batter",
+      "type": "boolean"
+    },
+    {
+      "id": "prep_skillet",
+      "label": "prep skillet",
+      "type": "boolean"
+    },
+    {
+      "id": "batter_into_skillet",
+      "label": "batter into skillet",
+      "type": "number"
+    },
+    {
+      "id": "pancake_resembles_fish",
+      "label": "Pancake resembles Fish",
+      "type": "number"
+    },
+    {
+      "id": "fully_cook_pancake",
+      "label": "Fully Cook Pancake",
+      "type": "number"
+    },
+    {
+      "id": "catch_eat",
+      "label": "Catch & Eat....",
+      "type": "number"
+    },
+    {
+      "id": "wash_and_clean_up",
+      "label": "Wash and Clean up",
+      "type": "number"
+    },
+    {
+      "id": "sum",
+      "label": "SUM",
+      "type": "boolean"
+    },
+    {
+      "id": "time_mm_ss",
+      "label": "Time\nmm:ss",
+      "type": "time_mm_ss"
+    }
+  ]
+}

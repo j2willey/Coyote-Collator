@@ -1,0 +1,22 @@
+{
+  "id": "p3_skits",
+  "name": "Game 3.  Showtime in Atlantis",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "skit_name",
+      "label": "Skit name",
+      "type": "boolean"
+    },
+    {
+      "id": "approx_length_in_minutes",
+      "label": "Approx. Length in minutes",
+      "type": "number"
+    },
+    {
+      "id": "points",
+      "label": "points",
+      "type": "number"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "p6",
+  "name": "Game 6.  Compass Game",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "check_folder_column_info_change",
+      "label": "Check folder Column info change",
+      "type": "number"
+    },
+    {
+      "id": "start",
+      "label": "Start",
+      "type": "boolean"
+    },
+    {
+      "id": "target_destination",
+      "label": "Target Destination",
+      "type": "number"
+    },
+    {
+      "id": "distance_from_target",
+      "label": "Distance from \nTarget",
+      "type": "number"
+    },
+    {
+      "id": "flag_height",
+      "label": "Flag Height",
+      "type": "boolean"
+    },
+    {
+      "id": "vball_width",
+      "label": "Vball width",
+      "type": "boolean"
+    },
+    {
+      "id": "time_mm_ss",
+      "label": "Time\nmm:ss",
+      "type": "time_mm_ss"
+    },
+    {
+      "id": "time",
+      "label": "Time",
+      "type": "time_mm_ss"
+    }
+  ]
+}

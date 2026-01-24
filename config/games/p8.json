@@ -1,0 +1,12 @@
+{
+  "id": "p8",
+  "name": "Game 8.  Octopus Odyssey",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    }
+  ]
+}

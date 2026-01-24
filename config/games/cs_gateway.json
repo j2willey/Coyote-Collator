@@ -1,0 +1,12 @@
+{
+  "id": "cs_gateway",
+  "name": "CS Gateway",
+  "type": "troop",
+  "fields": [
+    {
+      "id": "points",
+      "label": "Points",
+      "type": "number"
+    }
+  ]
+}

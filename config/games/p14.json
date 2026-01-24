@@ -1,0 +1,27 @@
+{
+  "id": "p14",
+  "name": "Game 14 Mermaid Tails",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    },
+    {
+      "id": "knot_correctly_tied",
+      "label": "Knot correctly tied",
+      "type": "number"
+    },
+    {
+      "id": "knot_rationale",
+      "label": "Knot Rationale",
+      "type": "boolean"
+    },
+    {
+      "id": "time_points",
+      "label": "Time Points",
+      "type": "time_mm_ss"
+    }
+  ]
+}

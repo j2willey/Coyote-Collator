@@ -1,0 +1,17 @@
+{
+  "id": "p17_racing",
+  "name": "Game 17.  Racing Against the Tide",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    },
+    {
+      "id": "time_mm_ss",
+      "label": "Time\nmm:ss",
+      "type": "time_mm_ss"
+    }
+  ]
+}

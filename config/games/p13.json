@@ -1,0 +1,12 @@
+{
+  "id": "p13",
+  "name": "Game 13.  Underwater Treasure Hunt",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    }
+  ]
+}

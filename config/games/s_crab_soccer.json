@@ -1,0 +1,12 @@
+{
+  "id": "s_crab_soccer",
+  "name": "S Crab Soccer",
+  "type": "troop",
+  "fields": [
+    {
+      "id": "points",
+      "label": "Points",
+      "type": "number"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "p15",
+  "name": "Game 15 Mariana Trench",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    },
+    {
+      "id": "puzzle_points_earned",
+      "label": "Puzzle Points Earned",
+      "type": "number"
+    }
+  ]
+}

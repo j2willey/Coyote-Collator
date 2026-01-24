@@ -1,0 +1,37 @@
+{
+  "id": "p_build",
+  "name": "P Build",
+  "type": "troop",
+  "fields": [
+    {
+      "id": "car_name",
+      "label": "Car Name",
+      "type": "boolean"
+    },
+    {
+      "id": "compliance",
+      "label": "Compliance",
+      "type": "boolean"
+    },
+    {
+      "id": "design",
+      "label": "Design",
+      "type": "boolean"
+    },
+    {
+      "id": "functionality",
+      "label": "Functionality",
+      "type": "boolean"
+    },
+    {
+      "id": "construction",
+      "label": "Construction",
+      "type": "boolean"
+    },
+    {
+      "id": "showmanship",
+      "label": "Showmanship",
+      "type": "boolean"
+    }
+  ]
+}

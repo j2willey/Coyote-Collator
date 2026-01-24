@@ -1,0 +1,12 @@
+{
+  "id": "s_landskis",
+  "name": "S LandSkis",
+  "type": "troop",
+  "fields": [
+    {
+      "id": "points",
+      "label": "Points",
+      "type": "number"
+    }
+  ]
+}

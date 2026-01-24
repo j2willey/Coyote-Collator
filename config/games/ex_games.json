@@ -1,0 +1,12 @@
+{
+  "id": "ex_games",
+  "name": "Exhibition",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    }
+  ]
+}

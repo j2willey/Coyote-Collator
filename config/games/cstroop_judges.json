@@ -1,0 +1,12 @@
+{
+  "id": "cstroop_judges",
+  "name": "CSTroop Judges",
+  "type": "troop",
+  "fields": [
+    {
+      "id": "points",
+      "label": "Points",
+      "type": "number"
+    }
+  ]
+}

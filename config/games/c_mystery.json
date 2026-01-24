@@ -1,0 +1,27 @@
+{
+  "id": "c_mystery",
+  "name": "C Mystery",
+  "type": "troop",
+  "fields": [
+    {
+      "id": "dish",
+      "label": "Dish",
+      "type": "boolean"
+    },
+    {
+      "id": "cooking_techniques",
+      "label": "Cooking Techniques",
+      "type": "number"
+    },
+    {
+      "id": "presentation",
+      "label": "Presentation",
+      "type": "boolean"
+    },
+    {
+      "id": "flavor_taste",
+      "label": "Flavor/Taste",
+      "type": "boolean"
+    }
+  ]
+}

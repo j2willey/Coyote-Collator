@@ -1,0 +1,27 @@
+{
+  "id": "gd_croc_crossing",
+  "name": "Game D.  Crocodile Crossing",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "patrol_sprirt",
+      "label": "Patrol Sprirt",
+      "type": "boolean"
+    },
+    {
+      "id": "time_taken",
+      "label": "Time Taken",
+      "type": "time_mm_ss"
+    },
+    {
+      "id": "speed_motivation",
+      "label": "Speed(Motivation)",
+      "type": "number"
+    },
+    {
+      "id": "following_rules",
+      "label": "Following Rules",
+      "type": "number"
+    }
+  ]
+}

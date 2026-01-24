@@ -1,0 +1,17 @@
+{
+  "id": "p7",
+  "name": "Game 7.  Colorguard Game",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "check_folder_column_info_change",
+      "label": "Check folder Column info change",
+      "type": "number"
+    },
+    {
+      "id": "questions_correct",
+      "label": "Questions Correct",
+      "type": "number"
+    }
+  ]
+}

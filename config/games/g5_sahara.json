@@ -1,0 +1,82 @@
+{
+  "id": "g5_sahara",
+  "name": "Game 5.  Sahara Oasis             Savanna  Irrigation",
+  "type": "patrol",
+  "fields": [
+    {
+      "id": "rig_bucket_w_knots",
+      "label": "Rig bucket w/ knots",
+      "type": "number"
+    },
+    {
+      "id": "submerge_bucket",
+      "label": "submerge bucket",
+      "type": "number"
+    },
+    {
+      "id": "stop_contain_leaks",
+      "label": "stop/contain leaks",
+      "type": "number"
+    },
+    {
+      "id": "reaching_into_well_1_pt_per_violation",
+      "label": "reaching into well\n(–1 pt per violation)",
+      "type": "number"
+    },
+    {
+      "id": "bucket_over_head",
+      "label": "bucket over head",
+      "type": "number"
+    },
+    {
+      "id": "bucket_without_hands",
+      "label": "bucket without  hands",
+      "type": "number"
+    },
+    {
+      "id": "stop_contain_leaks",
+      "label": "stop/contain leaks",
+      "type": "number"
+    },
+    {
+      "id": "2_3_before_moving",
+      "label": "2/3  before moving",
+      "type": "number"
+    },
+    {
+      "id": "stop_or_contain_leaks",
+      "label": "stop or contain leaks",
+      "type": "number"
+    },
+    {
+      "id": "1_2_before_moving",
+      "label": "1/2 before moving",
+      "type": "number"
+    },
+    {
+      "id": "stop_contain_leaks",
+      "label": "stop/contain leaks",
+      "type": "number"
+    },
+    {
+      "id": "siphon_at_least_3cups",
+      "label": "siphon at least 3cups",
+      "type": "number"
+    },
+    {
+      "id": "illegal_dipping_1_pt_violation",
+      "label": "Illegal dipping \n(–1 pt /violation)",
+      "type": "number"
+    },
+    {
+      "id": "other_penalties",
+      "label": "Other Penalties",
+      "type": "number"
+    },
+    {
+      "id": "h2o_cups_transferred",
+      "label": "H2O Cups transferred",
+      "type": "number"
+    }
+  ]
+}
