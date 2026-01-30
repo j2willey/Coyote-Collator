@@ -72,53 +72,15 @@
             </div>
         </section>
 
-        <!-- View 4: Registration -->
+        <!-- View 4: Registration (Tree) -->
         <section id="view-registration" class="hidden">
             <div class="controls">
                 <h2>Entity Registration</h2>
+                <button onclick="addEntity(null)" class="btn" style="background-color:#27ae60;">+ Add Troop</button>
             </div>
 
-            <!-- Quick Add Form -->
-            <div class="card" style="max-width: 500px; margin-bottom: 2rem; border-left: 5px solid #27ae60;">
-                <h3>Add New Troop or Patrol</h3>
-                <form id="reg-form">
-                    <div style="margin-bottom:1rem;">
-                        <label>Type</label>
-                        <select id="reg-type" style="width:100%; padding:8px;">
-                            <option value="patrol">Patrol</option>
-                            <option value="troop">Troop</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom:1rem;">
-                        <label>Troop Number</label>
-                        <input type="text" id="reg-troop-num" placeholder="e.g. 101" required>
-                    </div>
-                    <div style="margin-bottom:1rem;">
-                        <label>Name</label>
-                        <input type="text" id="reg-name" placeholder="Name (e.g. Flaming Arrows)" required>
-                    </div>
-                    <button type="submit" class="btn" style="background-color:#27ae60;">Register Entity</button>
-                    <div id="reg-message" style="margin-top:10px; font-weight:bold;"></div>
-                </form>
-            </div>
-
-            <div class="card">
-                <h3>Current Roster</h3>
-                <div class="table-container">
-                    <table id="roster-table">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Troop</th>
-                                <th>Name</th>
-                                <th>ID</th>
-                            </tr>
-                        </thead>
-                        <tbody id="roster-tbody">
-                            <!-- Injected -->
-                        </tbody>
-                    </table>
-                </div>
+            <div id="roster-tree" style="display:block; padding: 10px;">
+                <!-- Tree Injected Here -->
             </div>
         </section>
     </main>

@@ -508,66 +508,126 @@ function renderMatrixTransposed(table, games, patrols) {
     table.appendChild(tbody);
 }
 
-// --- Registration View ---
+// --- Registration View (Tree) ---
 
 function renderRoster() {
-    const tbody = document.getElementById('roster-tbody');
-    tbody.innerHTML = '';
+    const container = document.getElementById('roster-tree');
+    container.innerHTML = '';
 
-    const entities = [...appData.entities].sort((a, b) => {
-        // Sort by type (Troop first), then Number
-        if (a.type !== b.type) return a.type === 'troop' ? -1 : 1;
-        const numA = parseInt(a.troop_number) || 0;
-        const numB = parseInt(b.troop_number) || 0;
-        if (numA !== numB) return numA - numB;
-        return a.name.localeCompare(b.name);
+    const troops = appData.entities.filter(e => e.type === 'troop')
+        .sort((a,b) => (parseInt(a.troop_number)||0) - (parseInt(b.troop_number)||0));
+
+    const patrols = appData.entities.filter(e => e.type === 'patrol');
+
+    // Group Patrols
+    const patrolsByParent = {};
+    const patrolsByNum = {}; // Fallback
+    const orphans = [];
+
+    patrols.forEach(p => {
+        if (p.parent_id) {
+            if (!patrolsByParent[p.parent_id]) patrolsByParent[p.parent_id] = [];
+            patrolsByParent[p.parent_id].push(p);
+        } else {
+            // Check formatted number for fallback matching
+            if (!patrolsByNum[p.troop_number]) patrolsByNum[p.troop_number] = [];
+            patrolsByNum[p.troop_number].push(p);
+        }
     });
 
-    entities.forEach(ent => {
-        const tr = document.createElement('tr');
+    // Render Troops
+    troops.forEach(troop => {
+        const myPatrols = [
+            ...(patrolsByParent[troop.id] || []),
+            ...(patrolsByNum[troop.troop_number] || [])
+        ];
 
-        // Type Badge
-        const typeTd = document.createElement('td');
-        const badge = document.createElement('span');
-        badge.className = 'badge';
-        badge.innerText = ent.type.toUpperCase();
-        // Simple styling for badge if not in css
-        badge.style.padding = '2px 5px';
-        badge.style.borderRadius = '4px';
-        badge.style.backgroundColor = ent.type === 'troop' ? '#3498db' : '#e67e22';
-        badge.style.color = '#fff';
-        badge.style.fontSize = '0.8em';
+        // Remove from fallback map so they don't appear in orphans
+        if (patrolsByNum[troop.troop_number]) delete patrolsByNum[troop.troop_number];
 
-        typeTd.appendChild(badge);
-        tr.appendChild(typeTd);
+        const details = document.createElement('details');
+        details.open = true; // Default expanded
+        details.style = "margin-bottom:10px; border:1px solid #ddd; padding:10px; border-radius:4px; background:white;";
 
-        tr.appendChild(createTd(ent.troop_number));
-        tr.appendChild(createTd(ent.name));
-        tr.appendChild(createTd(ent.id));
+        const summary = document.createElement('summary');
+        summary.style = "font-weight:bold; cursor:pointer; list-style:none; display:flex; align-items:center;";
+        summary.innerHTML = `
+            <span style="font-size:1.2rem; margin-right:10px; color:#3498db;">⚑</span>
+            <span style="font-size:1.2rem;">Troop ${troop.troop_number} - ${troop.name}</span>
+            <button class="btn btn-sm btn-outline-success ms-auto" onclick="addEntity(${troop.id})">+ Add Patrol</button>
+        `;
+        details.appendChild(summary);
 
-        tbody.appendChild(tr);
+        const list = document.createElement('div');
+        list.style = "margin-left:35px; margin-top:10px; border-left: 2px solid #eee; padding-left: 10px;";
+
+        if (myPatrols.length === 0) {
+            list.innerHTML = '<div class="text-muted small">No patrols registered</div>';
+        } else {
+            myPatrols.forEach(p => {
+                const div = document.createElement('div');
+                div.className = "d-flex justify-content-between align-items-center p-2 border-bottom";
+                div.innerHTML = `
+                    <span>${p.name} <small class="text-muted">(${p.id})</small></span>
+                    <span class="badge bg-secondary">Patrol</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+        details.appendChild(list);
+        container.appendChild(details);
     });
+
+    // Handle Remaining Orphans (Patrols with no matching Troop)
+    const trulyOrphaned = [];
+    Object.values(patrolsByNum).forEach(arr => trulyOrphaned.push(...arr));
+    orphans.push(...trulyOrphaned);
+
+    if (orphans.length > 0) {
+        const orphanContainer = document.createElement('div');
+        orphanContainer.style = "margin-top:20px; border:2px dashed #e67e22; padding:10px; border-radius:4px; background:#fff8e1;";
+        orphanContainer.innerHTML = `<h4 class="text-warning">⚠ Unassigned Patrols</h4>`;
+
+        orphans.forEach(p => {
+             const div = document.createElement('div');
+             div.className = "d-flex justify-content-between align-items-center p-2 border-bottom";
+             div.innerHTML = `
+                <span>${p.name} <small class="text-muted">(Troop ${p.troop_number} - No Parent Link)</small></span>
+                <span class="badge bg-warning text-dark">Orphan</span>
+            `;
+            orphanContainer.appendChild(div);
+        });
+        container.appendChild(orphanContainer);
+    }
 }
 
-async function handleRegistration(e) {
-    e.preventDefault();
+async function addEntity(parentId) {
+    let type = 'troop';
+    let troopNum = '';
+    let name = '';
+    let parent = null;
 
-    const typeSelect = document.getElementById('reg-type');
-    const numInput = document.getElementById('reg-troop-num');
-    const nameInput = document.getElementById('reg-name');
-    const msgDiv = document.getElementById('reg-message');
+    if (parentId) {
+        type = 'patrol';
+        parent = appData.entities.find(e => e.id === parentId);
+        if (!parent) return alert("Parent troop not found");
+        troopNum = parent.troop_number;
+        name = prompt(`New Patrol Name for Troop ${troopNum}:`);
+    } else {
+        type = 'troop';
+        troopNum = prompt("Enter Troop Number:");
+        if (!troopNum) return;
+        name = prompt("Enter Troop Name (or description):");
+    }
+
+    if (!name) return;
 
     const payload = {
-        name: nameInput.value.trim(),
-        type: typeSelect.value,
-        troop_number: numInput.value.trim()
+        name: name.trim(),
+        type: type,
+        troop_number: (troopNum+'').trim(),
+        parent_id: parentId
     };
-
-    if (!payload.troop_number || !payload.name) {
-        msgDiv.innerText = 'Please fill all fields';
-        msgDiv.style.color = 'red';
-        return;
-    }
 
     try {
         const res = await fetch('/api/entities', {
@@ -577,32 +637,22 @@ async function handleRegistration(e) {
         });
 
         if (!res.ok) throw new Error('Failed to register');
-
         const newEntity = await res.json();
 
         // Update Local State
         appData.entities.push(newEntity);
 
-        // Feedback
-        msgDiv.innerText = `Success: Added ${newEntity.name}`;
-        msgDiv.style.color = 'green';
-
-        // Clear Form Name only (keep troop num for convenience)
-        nameInput.value = '';
-        nameInput.focus();
-
-        // Refresh List
-        renderRoster();
-
-        // Clear success message after 3s
-        setTimeout(() => { msgDiv.innerText = ''; }, 3000);
+        renderRoster(); // Refresh Tree
 
     } catch (err) {
         console.error(err);
-        msgDiv.innerText = 'Error registering entity';
-        msgDiv.style.color = 'red';
+        alert("Failed to add entity: " + err.message);
     }
 }
+window.addEntity = addEntity; // Export
+
+// (Old handleRegistration removed)
+
 
 
 // --- Editing Support ---

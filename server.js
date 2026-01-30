@@ -25,7 +25,8 @@ db.exec(`
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     type TEXT CHECK(type IN ('patrol', 'troop')) NOT NULL,
-    troop_number TEXT NOT NULL
+    troop_number TEXT NOT NULL,
+    parent_id INTEGER
   );
 
   CREATE TABLE IF NOT EXISTS judges (
@@ -51,6 +52,11 @@ db.exec(`
     status TEXT
   );
 `);
+
+// Migration for existing databases
+try {
+  db.exec("ALTER TABLE entities ADD COLUMN parent_id INTEGER");
+} catch (e) { /* Column already exists */ }
 
 
 app.use(express.json());
@@ -241,16 +247,16 @@ app.listen(PORT, '0.0.0.0', () => {
 
 // POST /api/entities (Create new Troop or Patrol)
 app.post('/api/entities', (req, res) => {
-  const { name, type, troop_number } = req.body;
+  const { name, type, troop_number, parent_id } = req.body;
 
   if (!name || !type || !troop_number) {
     return res.status(400).json({ error: 'Missing fields' });
   }
 
   try {
-    const insert = db.prepare('INSERT INTO entities (name, type, troop_number) VALUES (?, ?, ?)');
-    const info = insert.run(name, type, troop_number);
-    res.json({ id: info.lastInsertRowid, name, type, troop_number });
+    const insert = db.prepare('INSERT INTO entities (name, type, troop_number, parent_id) VALUES (?, ?, ?, ?)');
+    const info = insert.run(name, type, troop_number, parent_id || null);
+    res.json({ id: info.lastInsertRowid, name, type, troop_number, parent_id: parent_id || null });
   } catch (err) {
     console.error('Registration error:', err);
     res.status(500).json({ error: 'Database error' });
