@@ -6,47 +6,74 @@
     {
       "id": "attempt_friction_fire",
       "label": "Attempt Friction Fire",
-      "type": "number"
+      "type": "number",
+      "min": 0,
+      "max": 5,
+      "defaultValue": 0
     },
     {
       "id": "charing_or_powder",
       "label": "charing or powder",
-      "type": "number"
+      "type": "number",
+      "min": 0,
+      "max": 5,
+      "defaultValue": 0
     },
     {
       "id": "smoke",
       "label": "smoke",
-      "type": "boolean"
+      "type": "number",
+      "min": 0,
+      "max": 5,
+      "defaultValue": 0
     },
     {
       "id": "ember",
       "label": "ember",
-      "type": "boolean"
+      "type": "number",
+      "min": 0,
+      "max": 5,
+      "defaultValue": 0
     },
     {
       "id": "ignite_tinder",
       "label": "Ignite tinder",
-      "type": "boolean"
+      "type": "number",
+      "min": 0,
+      "max": 5,
+      "defaultValue": 0
     },
     {
       "id": "ignite_kindling",
       "label": "ignite kindling",
-      "type": "number"
+      "type": "number",
+      "min": 0,
+      "max": 5,
+      "defaultValue": 0
     },
     {
       "id": "water_boils",
       "label": "water boils",
-      "type": "boolean"
+      "type": "number",
+      "min": 0,
+      "max": 5,
+      "defaultValue": 0
     },
     {
       "id": "extinguish_fire_reset",
       "label": "Extinguish fire & reset",
-      "type": "number"
+      "type": "number",
+      "min": 0,
+      "max": 5,
+      "defaultValue": 0
     },
     {
       "id": "matches_used_count",
       "label": "Matches Used\n(Count)",
-      "type": "number"
+      "type": "number",
+      "min": 0,
+      "max": 20,
+      "defaultValue": 0
     },
     {
       "id": "time_to_boil_or_n_a_mm_ss",

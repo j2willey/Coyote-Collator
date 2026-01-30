@@ -343,42 +343,55 @@ function renderForm() {
 
 function generateFieldHTML(field) {
     const id = field.id;
+
+    // 1. Textarea: Vertical Stack (Exception)
+    if (field.type === 'textarea') {
+        return `<div class="mb-4">
+            <label class="form-label fw-bold" for="f_${id}">${field.label}</label>
+            <textarea class="form-control" id="f_${id}" rows="3" placeholder="${field.placeholder || ''}"></textarea>
+        </div>`;
+    }
+
+    // 2. All others: Grid Layout (Label Left, Input Right)
     let input = '';
 
     if (field.type === 'boolean') {
-        input = `<div class="form-check form-switch p-3 border rounded bg-light d-flex justify-content-between align-items-center">
-                    <label class="form-check-label fw-bold mb-0" for="f_${id}">${field.label}</label>
-                    <input class="form-check-input" type="checkbox" id="f_${id}" style="transform: scale(1.4); margin-left:1rem;">
+        input = `<div class="form-check form-switch d-flex justify-content-end mb-0">
+                    <input class="form-check-input" type="checkbox" id="f_${id}" style="transform: scale(1.4);">
                  </div>`;
-        return `<div class="mb-3">${input}</div>`;
     }
     else if (field.type === 'range') {
         const mid = Math.ceil((field.max||5)/2);
-        input = `<div class="d-flex align-items-center gap-2">
-                    <span class="fw-bold text-muted">${field.min||0}</span>
+        input = `<div class="d-flex align-items-center">
                     <input type="range" class="form-range flex-grow-1" id="f_${id}" min="${field.min||0}" max="${field.max||5}" value="${mid}" oninput="document.getElementById('d_${id}').innerText=this.value">
-                    <span class="fw-bold text-muted">${field.max||5}</span>
-                 </div>
-                 <div class="text-center fw-bold text-primary mt-1">Score: <span id="d_${id}" style="font-size:1.2rem">${mid}</span></div>`;
+                    <span class="fw-bold text-primary ms-2" id="d_${id}" style="min-width:1.5em; text-align: right;">${mid}</span>
+                 </div>`;
     }
     else if (field.type === 'time_mm_ss') {
-        input = `<div class="input-group input-group-lg">
-                    <input type="number" class="form-control text-center" id="f_${id}_mm" placeholder="MM" onchange="app.combineTime('${id}')">
-                    <span class="input-group-text">:</span>
-                    <input type="number" class="form-control text-center" id="f_${id}_ss" placeholder="SS" onchange="app.combineTime('${id}')">
+        input = `<div class="input-group input-group-sm">
+                    <input type="number" class="form-control text-center px-1" id="f_${id}_mm" placeholder="MM" inputmode="numeric" pattern="[0-9]*" onchange="app.combineTime('${id}')">
+                    <span class="input-group-text px-1">:</span>
+                    <input type="number" class="form-control text-center px-1" id="f_${id}_ss" placeholder="SS" inputmode="numeric" pattern="[0-9]*" onchange="app.combineTime('${id}')">
                  </div><input type="hidden" id="f_${id}_val">`;
     }
-    else if (field.type === 'select') {
-        input = `<select class="form-select form-select-lg" id="f_${id}">${field.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>`;
+    else if (field.type === 'number') {
+        input = `<input type="number" class="form-control form-control-sm" id="f_${id}" inputmode="numeric" pattern="[0-9]*" placeholder="${field.placeholder || ''}">`;
     }
-    else if (field.type === 'textarea') {
-        input = `<textarea class="form-control" id="f_${id}" rows="3" placeholder="${field.placeholder || ''}"></textarea>`;
+    else if (field.type === 'select') {
+        input = `<select class="form-select form-select-sm" id="f_${id}">${field.options.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>`;
     }
     else {
-        input = `<input type="text" class="form-control form-control-lg" id="f_${id}">`;
+        input = `<input type="text" class="form-control form-control-sm" id="f_${id}">`;
     }
 
-    return `<div class="mb-3"><label class="form-label fw-bold">${field.label}</label>${input}</div>`;
+    return `<div class="row py-2 border-bottom align-items-center">
+                <div class="col-8">
+                    <label class="form-label fw-bold mb-0" for="f_${id}">${field.label}</label>
+                </div>
+                <div class="col-4">
+                    ${input}
+                </div>
+            </div>`;
 }
 
 function combineTime(id) {

@@ -2,6 +2,7 @@ const CACHE_NAME = 'coyote-scorer-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
+  '/css/bootstrap.min.css',
   '/css/style.css',
   '/js/app.js',
   '/js/sync-manager.js',
