@@ -296,6 +296,13 @@ function openGameDetail(gameId) {
         return numA - numB;
     });
 
+    const sortFn = (a, b) => (a.sortOrder ?? 900) - (b.sortOrder ?? 900);
+    // Dynamic Cols (merged)
+    const allFields = [
+        ...(game.fields || []),
+        ...(appData.commonScoring || [])
+    ].sort(sortFn);
+
     // Build Headers
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
@@ -304,18 +311,11 @@ function openGameDetail(gameId) {
     const stdHeaders = ['Troop', 'Entity', 'Time'];
     stdHeaders.forEach(h => headerRow.appendChild(createTh(h)));
 
-    const sortFn = (a, b) => (a.sortOrder ?? 900) - (b.sortOrder ?? 900);
-
-    // Dynamic Cols (merged)
-    const allFields = [
-        ...(game.fields || []),
-        ...(appData.commonScoring || [])
-    ].sort(sortFn);
-
     allFields.forEach(field => {
         headerRow.appendChild(createTh(field.label));
     });
 
+    headerRow.appendChild(createTh('Total'));
     headerRow.appendChild(createTh('Actions'));
     thead.appendChild(headerRow);
     table.appendChild(thead);
@@ -329,17 +329,21 @@ function openGameDetail(gameId) {
         tr.appendChild(createTd(score.entity_name));
         tr.appendChild(createTd(new Date(score.timestamp).toLocaleTimeString()));
 
-        // All Fields (merged & sorted) matches headers
-        const sortFn = (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999);
-        const allFields = [
-            ...(game.fields || []),
-            ...(appData.commonScoring || [])
-        ].sort(sortFn);
+        let totalScore = 0;
 
         allFields.forEach(field => {
             const val = score.score_payload[field.id];
             tr.appendChild(createTd(formatValue(val, field.type)));
+
+            // Calculate Total
+            if (!field.excludeFromTotal) {
+                const n = parseFloat(val);
+                if (!isNaN(n)) totalScore += n;
+            }
         });
+
+        // Total Column
+        tr.appendChild(createTd(`<strong>${totalScore}</strong>`));
 
         // Action: Edit
         const actionTd = document.createElement('td');
@@ -356,7 +360,7 @@ function openGameDetail(gameId) {
     if (gameScores.length === 0) {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
-        td.colSpan = 3 + gameFields.length + commonFields.length;
+        td.colSpan = 5 + allFields.length;
         td.innerText = "No scores submitted yet.";
         td.style.textAlign = 'center';
         td.style.padding = '20px';

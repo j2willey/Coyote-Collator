@@ -73,12 +73,20 @@
       "type": "number",
       "min": 0,
       "max": 20,
-      "defaultValue": 0
+      "defaultValue": 0,
+      "excludeFromTotal": true
     },
     {
       "id": "time_to_boil_or_n_a_mm_ss",
       "label": "Time to Boil or N.A.\n\nmm:ss",
-      "type": "time_mm_ss"
+      "type": "time_mm_ss",
+      "excludeFromTotal": true
+    },
+    {
+      "id": "judges_points_calc",
+      "label": "Calculated Points",
+      "type": "number",
+      "adminOnly": true
     }
   ]
 }
