@@ -203,17 +203,15 @@ function openGameDetail(gameId) {
     const stdHeaders = ['Troop', 'Entity', 'Time'];
     stdHeaders.forEach(h => headerRow.appendChild(createTh(h)));
 
-    const sortFn = (a, b) => (a.sortOrder || 999) - (b.sortOrder || 999);
+    const sortFn = (a, b) => (a.sortOrder ?? 900) - (b.sortOrder ?? 900);
 
-    // Dynamic Cols (from game config)
-    const gameFields = [...(game.fields || [])].sort(sortFn);
-    gameFields.forEach(field => {
-        headerRow.appendChild(createTh(field.label));
-    });
+    // Dynamic Cols (merged)
+    const allFields = [
+        ...(game.fields || []),
+        ...(appData.commonScoring || [])
+    ].sort(sortFn);
 
-    // Common Scoring Cols
-    const commonFields = [...(appData.commonScoring || [])].sort(sortFn);
-    commonFields.forEach(field => {
+    allFields.forEach(field => {
         headerRow.appendChild(createTh(field.label));
     });
 
@@ -230,14 +228,14 @@ function openGameDetail(gameId) {
         tr.appendChild(createTd(score.entity_name));
         tr.appendChild(createTd(new Date(score.timestamp).toLocaleTimeString()));
 
-        // Payload Fields
-        gameFields.forEach(field => {
-            const val = score.score_payload[field.id];
-            tr.appendChild(createTd(formatValue(val, field.type)));
-        });
+        // All Fields (merged & sorted) matches headers
+        const sortFn = (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999);
+        const allFields = [
+            ...(game.fields || []),
+            ...(appData.commonScoring || [])
+        ].sort(sortFn);
 
-        // Common Fields
-        commonFields.forEach(field => {
+        allFields.forEach(field => {
             const val = score.score_payload[field.id];
             tr.appendChild(createTd(formatValue(val, field.type)));
         });
@@ -493,7 +491,7 @@ function showEditModal(score, game) {
     const existing = document.getElementById('edit-modal');
     if (existing) existing.remove();
 
-    const sortFn = (a, b) => (a.sortOrder || 999) - (b.sortOrder || 999);
+    const sortFn = (a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999);
     const allFields = [
         ...(game.fields || []),
         ...(appData.commonScoring || [])

@@ -327,17 +327,15 @@ function renderForm() {
     els.scoringTeam.textContent = `${e.name} (Troop ${e.troop_number})`;
     els.scoreForm.innerHTML = '';
 
-    const sortFn = (a, b) => (a.sortOrder || 999) - (b.sortOrder || 999);
+    const sortFn = (a, b) => (a.sortOrder ?? 900) - (b.sortOrder ?? 900);
 
-    if(s.fields) {
-        [...s.fields].sort(sortFn).forEach(f => {
-            if (!f.adminOnly) els.scoreForm.innerHTML += generateFieldHTML(f);
-        });
-    }
+    const allFields = [
+        ...(s.fields || []),
+        ...(state.config.common_scoring || [])
+    ].sort(sortFn);
 
-    if(state.config.common_scoring && state.config.common_scoring.length > 0) {
-        els.scoreForm.innerHTML += `<div class="mt-4 mb-3 pb-2 border-bottom border-2 text-primary fw-bold text-uppercase small">Standard Scoring</div>`;
-        [...state.config.common_scoring].sort(sortFn).forEach(f => {
+    if (allFields.length > 0) {
+        allFields.forEach(f => {
             if (!f.adminOnly) els.scoreForm.innerHTML += generateFieldHTML(f);
         });
     }
