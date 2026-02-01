@@ -62,3 +62,12 @@
 .spreadsheet-table tr:hover {
     background-color: #e8f4fc;
 }
+
+/* Sortable Headers */
+.spreadsheet-table th.sortable-header:hover {
+    background-color: #ddd !important;
+}
+.spreadsheet-table th.sorted {
+    background-color: #d1ecf1 !important;
+    color: #0c5460;
+}

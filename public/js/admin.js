@@ -10,8 +10,8 @@ let appData = {
 
 let currentView = 'overview';
 let currentViewType = 'list'; // 'card' or 'list'
-let currentViewMode = 'patrol'; // 'patrol' or 'troop'
-let matrixTranspose = false;
+let detailSort = { col: 'troop_number', dir: 'asc' };
+let activeGameId = null;
 
 // Initialization
 document.addEventListener('DOMContentLoaded', async () => {
@@ -307,57 +307,131 @@ function openGameDetail(gameId) {
     const game = appData.games.find(g => g.id === gameId);
     if (!game) return;
 
+    if (activeGameId !== gameId) {
+        activeGameId = gameId;
+        detailSort = { col: 'troop_number', dir: 'asc' };
+    }
+
     document.getElementById('detail-title').innerText = formatGameTitle(game);
     const table = document.getElementById('detail-table');
     table.innerHTML = '';
     table.className = 'spreadsheet-table'; // Enforce spreadsheet look
 
-    // Filter scores for this game
-    const gameScores = appData.scores.filter(s => s.game_id === gameId);
-
-    // Sort by troop number
-    gameScores.sort((a, b) => {
-        const numA = parseInt(a.troop_number) || 0;
-        const numB = parseInt(b.troop_number) || 0;
-        return numA - numB;
-    });
-
-    const sortFn = (a, b) => (a.sortOrder ?? 900) - (b.sortOrder ?? 900);
-    // Dynamic Cols (merged)
+    const sortOrderFn = (a, b) => (a.sortOrder ?? 900) - (b.sortOrder ?? 900);
     const allFields = [
         ...(game.fields || []),
         ...(appData.commonScoring || [])
-    ].sort(sortFn);
+    ].sort(sortOrderFn);
+
+    // Filter and Enrich
+    const gameScores = appData.scores.filter(s => s.game_id === gameId).map(score => {
+        let total = 0;
+        allFields.forEach(f => {
+            if (!f.excludeFromTotal) {
+                const val = parseFloat(score.score_payload[f.id]);
+                if (!isNaN(val)) total += val;
+            }
+        });
+        return { ...score, _total: total };
+    });
+
+    // Sort Detail Table
+    gameScores.sort((a, b) => {
+        let valA, valB;
+        if (detailSort.col === 'troop_number') {
+            valA = parseInt(a.troop_number) || 0;
+            valB = parseInt(b.troop_number) || 0;
+        } else if (detailSort.col === 'entity_name') {
+            valA = String(a.entity_name || '').toLowerCase();
+            valB = String(b.entity_name || '').toLowerCase();
+        } else if (detailSort.col === 'timestamp') {
+            valA = new Date(a.timestamp).getTime();
+            valB = new Date(b.timestamp).getTime();
+        } else if (detailSort.col === '_total') {
+            valA = a._total;
+            valB = b._total;
+        } else {
+            // Dynamic Field ID
+            valA = a.score_payload[detailSort.col];
+            valB = b.score_payload[detailSort.col];
+
+            // Normalize for comparison
+            if (valA === undefined || valA === null) valA = '';
+            if (valB === undefined || valB === null) valB = '';
+
+            if (!isNaN(parseFloat(valA)) && !isNaN(parseFloat(valB))) {
+                valA = parseFloat(valA);
+                valB = parseFloat(valB);
+            } else {
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
+            }
+        }
+
+        if (valA < valB) return detailSort.dir === 'asc' ? -1 : 1;
+        if (valA > valB) return detailSort.dir === 'asc' ? 1 : -1;
+        return 0;
+    });
 
     // Build Headers
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
 
+    const addSortBtn = (th, colId) => {
+        th.style.cursor = 'pointer';
+        th.classList.add('sortable-header');
+
+        if (detailSort.col === colId) {
+            const arrow = detailSort.dir === 'asc' ? ' ▲' : ' ▼';
+            const innerDiv = th.querySelector('div');
+            if (innerDiv) {
+                innerDiv.innerText += arrow;
+            } else {
+                th.innerText += arrow;
+            }
+            th.classList.add('sorted');
+        }
+
+        th.onclick = () => {
+            if (detailSort.col === colId) {
+                detailSort.dir = detailSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                detailSort.col = colId;
+                detailSort.dir = 'asc';
+            }
+            openGameDetail(gameId);
+        };
+    };
+
     // Standard Cols
-    const stdHeaders = ['Troop', 'Name', 'Time'];
-    stdHeaders.forEach(h => {
-        const th = document.createElement('th');
-        th.innerText = h;
-        headerRow.appendChild(th);
-    });
+    const thTroop = createTh('Troop');
+    addSortBtn(thTroop, 'troop_number');
+    headerRow.appendChild(thTroop);
+
+    const thName = createTh('Name');
+    addSortBtn(thName, 'entity_name');
+    headerRow.appendChild(thName);
+
+    const thTime = createTh('Time');
+    addSortBtn(thTime, 'timestamp');
+    headerRow.appendChild(thTime);
 
     allFields.forEach(field => {
         const th = document.createElement('th');
         th.className = 'rotate-header';
         th.innerHTML = `<div>${field.label}</div>`;
         th.title = field.label; // Tooltip for readability
+        addSortBtn(th, field.id);
         headerRow.appendChild(th);
     });
 
     const thTotal = document.createElement('th');
-    thTotal.innerText = 'Total';
     thTotal.className = 'rotate-header';
     thTotal.innerHTML = `<div>Total</div>`;
+    addSortBtn(thTotal, '_total');
     headerRow.appendChild(thTotal);
 
-    const thActions = document.createElement('th');
-    thActions.innerText = 'Edit';
-    headerRow.appendChild(thActions);
+    headerRow.appendChild(createTh('Edit'));
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
@@ -370,21 +444,13 @@ function openGameDetail(gameId) {
         tr.appendChild(createTd(score.entity_name));
         tr.appendChild(createTd(new Date(score.timestamp).toLocaleTimeString()));
 
-        let totalScore = 0;
-
         allFields.forEach(field => {
             const val = score.score_payload[field.id];
             tr.appendChild(createTd(formatValue(val, field.type)));
-
-            // Calculate Total
-            if (!field.excludeFromTotal) {
-                const n = parseFloat(val);
-                if (!isNaN(n)) totalScore += n;
-            }
         });
 
         // Total Column
-        tr.appendChild(createTd(`<strong>${totalScore}</strong>`));
+        tr.appendChild(createTd(`<strong>${score._total}</strong>`));
 
         // Action: Edit
         const actionTd = document.createElement('td');
