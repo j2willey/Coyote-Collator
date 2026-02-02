@@ -241,16 +241,22 @@ function navigate(viewName) {
         const header = document.querySelector('header');
         header.style.backgroundColor = '';
         header.style.color = '';
+        const sub = document.getElementById('header-subtitle');
+        if(sub) sub.style.display = 'none';
     }
 
     // Reset Header on Home
     if (viewName === 'home') {
         document.getElementById('header-title').textContent = 'Coyote Collator';
-        const sub = document.getElementById('header-subtitle');
-        if(sub) sub.style.display = 'none';
+        
+        const syncLine = document.getElementById('header-sync-line');
+        if(syncLine) syncLine.style.display = 'block';
 
         // Remove active-dock styling if returning home unexpectedly
         document.body.style.paddingBottom = '0';
+    } else {
+        const syncLine = document.getElementById('header-sync-line');
+        if(syncLine) syncLine.style.display = 'none';
     }
 
     window.scrollTo(0,0);
