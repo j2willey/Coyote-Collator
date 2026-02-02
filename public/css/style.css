@@ -14,18 +14,30 @@ body {
     padding: 0;
     background-color: #f4f4f4;
     color: #333;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 header {
     background-color: var(--primary);
     color: white;
-    padding: 1rem;
+    padding: 1rem 1.25rem !important;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 3000 !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important;
+    border-bottom: 2px solid rgba(255,255,255,0.1); /* Subtle separator */
+    /* Force hardware acceleration for mobile fixed positioning */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
-h1 { margin: 0; font-size: 1.2rem; }
+h1 { margin: 0; font-size: 1.25rem; }
 
 #status-indicator {
     padding: 0.5rem 1rem;
@@ -35,9 +47,30 @@ h1 { margin: 0; font-size: 1.2rem; }
 .status-online { background-color: var(--secondary); color: white; }
 .status-offline { background-color: var(--danger); color: white; }
 
-main { padding: 1rem; max-width: 800px; margin: 0 auto; }
+main {
+    padding: 1rem 1.25rem !important;
+    padding-top: 5.5rem !important; /* Space for the fixed header */
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
 
 .hidden { display: none !important; }
+
+.judge-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
 
 .btn {
     display: block;
@@ -93,6 +126,17 @@ main { padding: 1rem; max-width: 800px; margin: 0 auto; }
     transform: translateY(0);
 }
 
+/* Mobile-friendly scoring rows and list items */
+#score-form .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.list-group-item {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
 .card {
     background: white;
     padding: 1rem;
@@ -103,6 +147,12 @@ main { padding: 1rem; max-width: 800px; margin: 0 auto; }
 
 .form-group { margin-bottom: 1rem; }
 label { display: block; margin-bottom: 0.5rem; font-weight: bold; font-size: 1.1rem; }
+
+h2 {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
 
 input[type="text"],
 input[type="number"],

@@ -120,8 +120,49 @@ function loadJudgeInfo() {
             if(els.judgeName) els.judgeName.value = j.name || '';
             if(els.judgeEmail) els.judgeEmail.value = j.email || '';
             if(els.judgeUnit) els.judgeUnit.value = j.unit || '';
+
+            if (j.name) {
+                const welcome = document.getElementById('welcome-text');
+                if (welcome) welcome.textContent = `Welcome, ${j.name.split(' ')[0]}.`;
+            }
+        } else {
+            // First time or missing info - show modal
+            toggleJudgeModal(true);
         }
     } catch(e) {}
+}
+
+function toggleJudgeModal(forceShow = null) {
+    const modal = document.getElementById('judge-modal');
+    if (!modal) return;
+
+    if (forceShow === true) {
+        modal.classList.remove('hidden');
+    } else if (forceShow === false) {
+        modal.classList.add('hidden');
+    } else {
+        modal.classList.toggle('hidden');
+    }
+}
+
+function saveJudgeInfo() {
+    const name = els.judgeName.value.trim();
+    const email = els.judgeEmail.value.trim();
+    const unit = els.judgeUnit.value.trim();
+
+    if (!email) {
+        alert("Email is required so we can identify your scores.");
+        return;
+    }
+
+    localStorage.setItem('judge_info', JSON.stringify({ name, email, unit }));
+
+    if (name) {
+        const welcome = document.getElementById('welcome-text');
+        if (welcome) welcome.textContent = `Welcome, ${name.split(' ')[0]}.`;
+    }
+
+    toggleJudgeModal(false);
 }
 
 // --- Data & Sync ---
@@ -687,5 +728,5 @@ function submitScore(e) {
     if(state.isOnline) syncManager.sync().then(updateSyncCounts);
 }
 
-window.app = { init, navigate, refreshData, selectStation, selectEntity, showEntitySelect, combineTime, submitScore, setMode, promptNewEntity };
+window.app = { init, navigate, refreshData, selectStation, selectEntity, showEntitySelect, combineTime, submitScore, setMode, promptNewEntity, toggleJudgeModal, saveJudgeInfo };
 init();
