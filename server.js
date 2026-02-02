@@ -86,6 +86,17 @@ function getNextEntityId(type) {
 }
 
 app.use(express.json());
+
+// Redirect desktop users to admin dashboard, mobile users to judge UI
+app.get('/', (req, res, next) => {
+    const ua = req.headers['user-agent'] || '';
+    const isMobile = /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua);
+    if (!isMobile) {
+        return res.redirect('/admin.html');
+    }
+    next();
+});
+
 app.use(express.static('public'));
 
 // --- API ROUTES ---
