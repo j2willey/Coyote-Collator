@@ -41,7 +41,7 @@ async function run() {
             const field = fieldConfigs.find(f => f.id === fieldId);
             if (!field) continue;
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

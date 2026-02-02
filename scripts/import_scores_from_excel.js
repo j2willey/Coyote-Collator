@@ -45,7 +45,7 @@ const convertValue = (val, type) => {
         return !!val;
     }
     if (type === 'number' || type === 'range') return Number(val);
-    if (type === 'time_mm_ss') {
+    if (type === 'timed') {
         if (typeof val === 'number') {
             const totalSeconds = Math.round(val * 24 * 60 * 60);
             const mm = Math.floor(totalSeconds / 60);

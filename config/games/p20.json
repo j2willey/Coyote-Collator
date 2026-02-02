@@ -16,7 +16,7 @@
     {
       "id": "time_in_seconds",
       "label": "Time in Seconds",
-      "type": "time_mm_ss",
+      "type": "timed",
       "audience": "judge",
       "kind": "points"
     }

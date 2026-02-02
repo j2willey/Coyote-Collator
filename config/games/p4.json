@@ -23,7 +23,7 @@
     {
       "id": "time",
       "label": "Time",
-      "type": "time_mm_ss",
+      "type": "timed",
       "audience": "judge",
       "kind": "points"
     }

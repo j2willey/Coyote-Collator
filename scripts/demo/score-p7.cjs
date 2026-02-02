@@ -88,7 +88,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

@@ -14,7 +14,7 @@ const patrols = [
       "catch_eat": 5,
       "wash_and_clean_up": 8,
       "sum": 53,
-      "time_mm_ss": 0.3298611111111111
+      "timed": 0.3298611111111111
     }
   },
   {
@@ -28,7 +28,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 10,
       "sum": 53,
-      "time_mm_ss": 0.2152777777777778
+      "timed": 0.2152777777777778
     }
   },
   {
@@ -42,7 +42,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 9,
       "sum": 62,
-      "time_mm_ss": 0.26944444444444443
+      "timed": 0.26944444444444443
     }
   },
   {
@@ -54,7 +54,7 @@ const patrols = [
       "fully_cook_pancake": 4,
       "catch_eat": 5,
       "sum": 42,
-      "time_mm_ss": 0.25
+      "timed": 0.25
     }
   },
   {
@@ -68,7 +68,7 @@ const patrols = [
       "catch_eat": 5,
       "wash_and_clean_up": 10,
       "sum": 59,
-      "time_mm_ss": 0.24444444444444444
+      "timed": 0.24444444444444444
     }
   },
   {
@@ -82,7 +82,7 @@ const patrols = [
       "catch_eat": 5,
       "wash_and_clean_up": 10,
       "sum": 54,
-      "time_mm_ss": 0.15347222222222223
+      "timed": 0.15347222222222223
     }
   },
   {
@@ -96,7 +96,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 10,
       "sum": 66,
-      "time_mm_ss": 0.18472222222222223
+      "timed": 0.18472222222222223
     }
   },
   {
@@ -110,7 +110,7 @@ const patrols = [
       "catch_eat": 2,
       "wash_and_clean_up": 8,
       "sum": 40,
-      "time_mm_ss": 0.2013888888888889
+      "timed": 0.2013888888888889
     }
   },
   {
@@ -124,7 +124,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 8,
       "sum": 61,
-      "time_mm_ss": 0.3055555555555556
+      "timed": 0.3055555555555556
     }
   },
   {
@@ -137,7 +137,7 @@ const patrols = [
       "fully_cook_pancake": 5,
       "catch_eat": 10,
       "sum": 60,
-      "time_mm_ss": 0.27847222222222223
+      "timed": 0.27847222222222223
     }
   },
   {
@@ -151,7 +151,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 4,
       "sum": 59,
-      "time_mm_ss": 0.3055555555555556
+      "timed": 0.3055555555555556
     }
   },
   {
@@ -165,7 +165,7 @@ const patrols = [
       "catch_eat": 9,
       "wash_and_clean_up": 10,
       "sum": 66,
-      "time_mm_ss": 0.15555555555555556
+      "timed": 0.15555555555555556
     }
   },
   {
@@ -179,11 +179,11 @@ const patrols = [
       "catch_eat": 2,
       "wash_and_clean_up": 10,
       "sum": 47,
-      "time_mm_ss": 0.29305555555555557
+      "timed": 0.29305555555555557
     }
   }
 ];
-const fieldConfigs = [{"id":"mix_batter","label":"Mix batter","type":"number","audience":"judge","kind":"points"},{"id":"prep_skillet","label":"prep skillet","type":"number","audience":"judge","kind":"points"},{"id":"batter_into_skillet","label":"batter into skillet","type":"number","audience":"judge","kind":"points"},{"id":"pancake_resembles_fish","label":"Pancake resembles Fish","type":"number","audience":"judge","kind":"points"},{"id":"fully_cook_pancake","label":"Fully Cook Pancake","type":"number","audience":"judge","kind":"points"},{"id":"catch_eat","label":"Catch & Eat....","type":"number","audience":"judge","kind":"points"},{"id":"wash_and_clean_up","label":"Wash and Clean up","type":"number","audience":"judge","kind":"points"},{"id":"sum","label":"SUM","type":"number","audience":"judge","kind":"points"},{"id":"time_mm_ss","label":"Time\nmm:ss","type":"time_mm_ss","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"mix_batter","label":"Mix batter","type":"number","audience":"judge","kind":"points"},{"id":"prep_skillet","label":"prep skillet","type":"number","audience":"judge","kind":"points"},{"id":"batter_into_skillet","label":"batter into skillet","type":"number","audience":"judge","kind":"points"},{"id":"pancake_resembles_fish","label":"Pancake resembles Fish","type":"number","audience":"judge","kind":"points"},{"id":"fully_cook_pancake","label":"Fully Cook Pancake","type":"number","audience":"judge","kind":"points"},{"id":"catch_eat","label":"Catch & Eat....","type":"number","audience":"judge","kind":"points"},{"id":"wash_and_clean_up","label":"Wash and Clean up","type":"number","audience":"judge","kind":"points"},{"id":"sum","label":"SUM","type":"number","audience":"judge","kind":"points"},{"id":"timed","label":"Time\nmm:ss","type":"timed","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -211,7 +211,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

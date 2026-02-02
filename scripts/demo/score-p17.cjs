@@ -6,107 +6,107 @@ const patrols = [
   {
     "name": "Skeleton Fishing",
     "scores": {
-      "time_mm_ss": 0.05694444444444444
+      "timed": 0.05694444444444444
     }
   },
   {
     "name": "Eaglez",
     "scores": {
-      "time_mm_ss": 0.05763888888888889
+      "timed": 0.05763888888888889
     }
   },
   {
     "name": "Inferno Sharks",
     "scores": {
-      "time_mm_ss": 0.059722222222222225
+      "timed": 0.059722222222222225
     }
   },
   {
     "name": "Ducks",
     "scores": {
-      "time_mm_ss": 0.05416666666666667
+      "timed": 0.05416666666666667
     }
   },
   {
     "name": "Dark Dragons",
     "scores": {
-      "time_mm_ss": 0.10069444444444445
+      "timed": 0.10069444444444445
     }
   },
   {
     "name": "Orcas",
     "scores": {
-      "time_mm_ss": 0.05694444444444444
+      "timed": 0.05694444444444444
     }
   },
   {
     "name": "Wolves",
     "scores": {
-      "time_mm_ss": 0.05486111111111111
+      "timed": 0.05486111111111111
     }
   },
   {
     "name": "Card Board Boxes",
     "scores": {
-      "time_mm_ss": 0.0625
+      "timed": 0.0625
     }
   },
   {
     "name": "Space Pirates",
     "scores": {
-      "time_mm_ss": ":56"
+      "timed": ":56"
     }
   },
   {
     "name": "Lakshay's Bros",
     "scores": {
-      "time_mm_ss": ":50"
+      "timed": ":50"
     }
   },
   {
     "name": "Minions",
     "scores": {
-      "time_mm_ss": 0.06319444444444444
+      "timed": 0.06319444444444444
     }
   },
   {
     "name": "Goofy Goobers",
     "scores": {
-      "time_mm_ss": 0.07013888888888889
+      "timed": 0.07013888888888889
     }
   },
   {
     "name": "Banana Ducks",
     "scores": {
-      "time_mm_ss": 0.04375
+      "timed": 0.04375
     }
   },
   {
     "name": "Krabbie Patties",
     "scores": {
-      "time_mm_ss": 0.044444444444444446
+      "timed": 0.044444444444444446
     }
   },
   {
     "name": "Ice Dragons",
     "scores": {
-      "time_mm_ss": 0.052083333333333336
+      "timed": 0.052083333333333336
     }
   },
   {
     "name": "Wolf Warriors",
     "scores": {
-      "time_mm_ss": 0.08680555555555555
+      "timed": 0.08680555555555555
     }
   },
   {
     "name": "Falcons",
     "scores": {
-      "time_mm_ss": ":46"
+      "timed": ":46"
     }
   }
 ];
-const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number","audience":"judge","kind":"points"},{"id":"time_mm_ss","label":"Time\nmm:ss","type":"time_mm_ss","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number","audience":"judge","kind":"points"},{"id":"timed","label":"Time\nmm:ss","type":"timed","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -134,7 +134,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

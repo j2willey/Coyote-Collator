@@ -121,7 +121,7 @@ const patrols = [
     }
   }
 ];
-const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number","audience":"judge","kind":"points"},{"id":"bonus_for_scout_sea_worthy_puns_jokes","label":"BONUS for Scout Sea worthy Puns/Jokes","type":"number","audience":"judge","kind":"points"},{"id":"time_raft_1_mm_sec","label":"Time\nRaft 1\nmm::sec","type":"time_mm_ss","audience":"judge","kind":"points"},{"id":"optional_time_raft_3_mm_sec","label":"OPTIONAL\nTime\nRaft 3\nmm::sec","type":"time_mm_ss","audience":"judge","kind":"points"},{"id":"avg_time_mm_sec","label":"AVG Time\nmm::sec","type":"time_mm_ss","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number","audience":"judge","kind":"points"},{"id":"bonus_for_scout_sea_worthy_puns_jokes","label":"BONUS for Scout Sea worthy Puns/Jokes","type":"number","audience":"judge","kind":"points"},{"id":"time_raft_1_mm_sec","label":"Time\nRaft 1\nmm::sec","type":"timed","audience":"judge","kind":"points"},{"id":"optional_time_raft_3_mm_sec","label":"OPTIONAL\nTime\nRaft 3\nmm::sec","type":"timed","audience":"judge","kind":"points"},{"id":"avg_time_mm_sec","label":"AVG Time\nmm::sec","type":"timed","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -149,7 +149,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

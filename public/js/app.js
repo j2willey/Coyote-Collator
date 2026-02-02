@@ -529,7 +529,7 @@ function generateFieldHTML(field) {
                     <span class="fw-bold text-primary ms-2" id="d_${id}" style="min-width:1.5em; text-align: right;">${mid}</span>
                  </div>`;
     }
-    else if (field.type === 'time_mm_ss') {
+    else if (field.type === 'timed') {
         // Updated Stopwatch Layout
 
         // Label col gets the Start button
@@ -585,7 +585,7 @@ function submitScore(e) {
         const el = document.getElementById(`f_${f.id}`);
         if(!el) continue;
         if(f.type === 'boolean') payload[f.id] = el.checked;
-        else if(f.type === 'time_mm_ss') { combineTime(f.id); payload[f.id] = document.getElementById(`f_${f.id}_val`).value; }
+        else if(f.type === 'timed') { combineTime(f.id); payload[f.id] = document.getElementById(`f_${f.id}_val`).value; }
         else payload[f.id] = el.value;
     }
 

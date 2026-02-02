@@ -63,7 +63,7 @@ JSON
   "max": 10,
   "defaultValue": 5
 }
-4. time_mm_ss (Stopwatch)
+4. timed (Stopwatch)
 A special input for timed events. The user enters Minutes and Seconds.
 
 Stored As: A string "MM:SS".
@@ -75,7 +75,7 @@ JSON
 {
   "id": "boil_time",
   "label": "Time to Boil",
-  "type": "time_mm_ss"
+  "type": "timed"
 }
 5. select (Dropdown)
 Used when there are specific text options.

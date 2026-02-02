@@ -35,7 +35,7 @@ const patrols = [
     }
   }
 ];
-const fieldConfigs = [{"id":"correct_assembly","label":"Correct Assembly","type":"number","audience":"judge","kind":"points"},{"id":"repacking_tent","label":"\"repacking Tent\"","type":"number","audience":"judge","kind":"points"},{"id":"time","label":"Time","type":"time_mm_ss","audience":"judge","kind":"points"},{"id":"patrol_flag","label":"Patrol Flag?","sortOrder":1,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"patrol_yell","label":"Patrol Yell?","sortOrder":2,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"patrol_spirit","label":"Patrol Spirit","sortOrder":3,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"unscoutlike","label":"Un-Scout-like Behavior (Penalty)","sortOrder":998,"type":"number","min":0,"max":100,"helperText":"Enter POSITIVE number to deduct points","defaultValue":0},{"id":"judge_notes","label":"Judge Notes / Comments","sortOrder":999,"type":"textarea","placeholder":"Optional notes on performance..."}];
+const fieldConfigs = [{"id":"correct_assembly","label":"Correct Assembly","type":"number","audience":"judge","kind":"points"},{"id":"repacking_tent","label":"\"repacking Tent\"","type":"number","audience":"judge","kind":"points"},{"id":"time","label":"Time","type":"timed","audience":"judge","kind":"points"},{"id":"patrol_flag","label":"Patrol Flag?","sortOrder":1,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"patrol_yell","label":"Patrol Yell?","sortOrder":2,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"patrol_spirit","label":"Patrol Spirit","sortOrder":3,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"unscoutlike","label":"Un-Scout-like Behavior (Penalty)","sortOrder":998,"type":"number","min":0,"max":100,"helperText":"Enter POSITIVE number to deduct points","defaultValue":0},{"id":"judge_notes","label":"Judge Notes / Comments","sortOrder":999,"type":"textarea","placeholder":"Optional notes on performance..."}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -63,7 +63,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

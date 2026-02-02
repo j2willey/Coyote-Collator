@@ -94,20 +94,34 @@
       "max": 20,
       "defaultValue": 0,
       "audience": "judge",
+      "kind": "metric"
+    },
+    {
+      "id": "matches_score",
+      "label": "Matches points\n",
+      "type": "number",
+      "audience": "admin",
       "kind": "points"
     },
     {
-      "id": "time_to_boil_or_n_a_mm_ss",
+      "id": "time_to_boil",
       "label": "Time to Boil or N.A.\n\nmm:ss",
-      "type": "time_mm_ss",
+      "type": "timed",
       "audience": "judge",
+      "kind": "metric"
+    },
+    {
+      "id": "time_to_boil_score",
+      "label": "Boil time Bonus",
+      "type": "number",
+      "audience": "admin",
       "kind": "points"
     },
     {
       "id": "judges_points_calc",
       "label": "Calculated Points",
       "type": "number",
-      "audience": "judge",
+      "audience": "admin",
       "kind": "points"
     }
   ],

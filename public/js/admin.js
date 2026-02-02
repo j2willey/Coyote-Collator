@@ -472,7 +472,43 @@ function openGameDetail(gameId) {
 
         scoringFields.forEach(field => {
             const val = score.score_payload[field.id];
-            tr.appendChild(createTd(formatValue(val, field.type)));
+            if (field.audience === 'admin') {
+                const td = document.createElement('td');
+                const input = document.createElement('input');
+                input.className = 'admin-input';
+                input.type = field.type === 'number' ? 'number' : 'text';
+                input.value = val !== undefined ? val : (field.defaultValue || '');
+                input.onchange = async () => {
+                    let newVal = input.value;
+                    if (field.type === 'number') {
+                        newVal = parseFloat(input.value);
+                        if (isNaN(newVal)) newVal = 0;
+                    }
+                    await updateScoreField(score.uuid, field.id, newVal);
+
+                    // Live update the total if it's a points field
+                    if (field.kind === 'points') {
+                        // Recalculate local _total
+                        let total = 0;
+                        scoringFields.forEach(f => {
+                            if (f.kind === 'points') {
+                                const v = parseFloat(score.score_payload[f.id]);
+                                if (!isNaN(v)) total += v;
+                            }
+                        });
+                        score._total = total;
+                        // Find the total cell in this row (it's the one before notes if notes exist, OR the last one otherwise)
+                        // Actually, safer to just update the innerHTML of the total cell if we can find it.
+                        // Or just trigger a re-render of the whole game detail if performance isn't an issue.
+                        // Given the context, a re-render is simplest.
+                        openGameDetail(activeGameId);
+                    }
+                };
+                td.appendChild(input);
+                tr.appendChild(td);
+            } else {
+                tr.appendChild(createTd(formatValue(val, field.type)));
+            }
         });
 
         // Total Column
@@ -905,4 +941,27 @@ function showEditModal(score, game) {
     form.appendChild(btnDiv);
 
     document.body.appendChild(backdrop);
+}
+
+async function updateScoreField(uuid, fieldId, value) {
+    const score = appData.scores.find(s => s.uuid === uuid);
+    if (!score) return;
+
+    // Update local copy
+    score.score_payload[fieldId] = value;
+
+    try {
+        const response = await fetch('/api/scores/' + uuid, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ score_payload: score.score_payload })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update score');
+        }
+    } catch (err) {
+        console.error('Update failed:', err);
+        alert('Failed to save change. Please refresh.');
+    }
 }

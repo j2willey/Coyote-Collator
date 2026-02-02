@@ -49,16 +49,16 @@
       "kind": "points"
     },
     {
-      "id": "time_mm_ss",
+      "id": "timed",
       "label": "Time\nmm:ss",
-      "type": "time_mm_ss",
+      "type": "timed",
       "audience": "judge",
       "kind": "points"
     },
     {
       "id": "time",
       "label": "Time",
-      "type": "time_mm_ss",
+      "type": "timed",
       "audience": "judge",
       "kind": "points"
     }

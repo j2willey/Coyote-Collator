@@ -45,7 +45,7 @@ Fields define a single input on the scoring form. These are used in the `fields`
 {
     "id": "time_to_boil",
     "label": "Time to Boil",
-    "type": "time_mm_ss",
+    "type": "timed",
     "kind": "metric",
     "audience": "judge",
     "sortOrder": 10
@@ -77,7 +77,7 @@ Fields define a single input on the scoring form. These are used in the `fields`
 | `textarea` | Multi-line text input. |
 | `select` | Dropdown menu (requires `options` array). |
 | `range` | Slider control (requires `min` and `max`). |
-| `time_mm_ss` | Special stopwatch input. Renders "Start" button and Minutes:Seconds fields. |
+| `timed` | Special stopwatch input. Renders "Start" button and Minutes:Seconds fields. |
 | `boolean` | **Deprecated**. Use `number` or `select` preferred. Renders as a switch. |
 
 ---

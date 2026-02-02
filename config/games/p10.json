@@ -44,7 +44,7 @@
     {
       "id": "all_patrol_members_complete_the_climb_within_time_limit",
       "label": "All patrol members complete the climb within time limit",
-      "type": "time_mm_ss",
+      "type": "timed",
       "audience": "judge",
       "kind": "points"
     },
@@ -65,14 +65,14 @@
     {
       "id": "more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance",
       "label": "More than one Scout\non ladder at a time \n(-5 pt each instance)",
-      "type": "time_mm_ss",
+      "type": "timed",
       "audience": "judge",
       "kind": "points"
     },
     {
-      "id": "time_mm_ss",
+      "id": "timed",
       "label": "Time\nmm:ss",
-      "type": "time_mm_ss",
+      "type": "timed",
       "audience": "judge",
       "kind": "points"
     }

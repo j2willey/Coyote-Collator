@@ -11,7 +11,7 @@ const patrols = [
       "tight_and_sturdy": 5,
       "spirited_celebration": 5,
       "disassemble_ladder_stack_materials": 5,
-      "time_mm_ss": "22:36"
+      "timed": "22:36"
     }
   },
   {
@@ -24,7 +24,7 @@ const patrols = [
       "spirited_celebration": 5,
       "disassemble_ladder_stack_materials": 5,
       "more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance": -5,
-      "time_mm_ss": "15:33"
+      "timed": "15:33"
     }
   },
   {
@@ -36,7 +36,7 @@ const patrols = [
       "spirited_celebration": 5,
       "disassemble_ladder_stack_materials": 5,
       "more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance": -10,
-      "time_mm_ss": "17:04"
+      "timed": "17:04"
     }
   },
   {
@@ -51,7 +51,7 @@ const patrols = [
       "spirited_celebration": 4,
       "disassemble_ladder_stack_materials": 3,
       "more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance": -10,
-      "time_mm_ss": "9:24"
+      "timed": "9:24"
     }
   },
   {
@@ -66,7 +66,7 @@ const patrols = [
       "spirited_celebration": 5,
       "disassemble_ladder_stack_materials": 5,
       "more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance": -5,
-      "time_mm_ss": "13:03"
+      "timed": "13:03"
     }
   },
   {
@@ -78,7 +78,7 @@ const patrols = [
       "tight_and_sturdy": 5,
       "spirited_celebration": 5,
       "disassemble_ladder_stack_materials": 5,
-      "time_mm_ss": "30:02"
+      "timed": "30:02"
     }
   },
   {
@@ -93,11 +93,11 @@ const patrols = [
       "spirited_celebration": 5,
       "disassemble_ladder_stack_materials": 4,
       "more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance": -10,
-      "time_mm_ss": "11:57"
+      "timed": "11:57"
     }
   }
 ];
-const fieldConfigs = [{"id":"ascending_order","label":"ascending order","type":"number","audience":"judge","kind":"points"},{"id":"uniformly_spaced","label":"uniformly spaced","type":"number","audience":"judge","kind":"points"},{"id":"proper_lashings_2_ea_20_pt","label":"Proper lashings\n(2 ea × 20 pt)","type":"number","audience":"judge","kind":"points"},{"id":"tight_and_sturdy","label":"tight and sturdy","type":"number","audience":"judge","kind":"points"},{"id":"secured_to_anchor_post","label":"secured to anchor post","type":"number","audience":"judge","kind":"points"},{"id":"all_patrol_members_complete_the_climb_within_time_limit","label":"All patrol members complete the climb within time limit","type":"time_mm_ss","audience":"judge","kind":"points"},{"id":"spirited_celebration","label":"Spirited celebration","type":"number","audience":"judge","kind":"points"},{"id":"disassemble_ladder_stack_materials","label":"Disassemble ladder, \nstack materials","type":"number","audience":"judge","kind":"points"},{"id":"more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance","label":"More than one Scout\non ladder at a time \n(-5 pt each instance)","type":"time_mm_ss","audience":"judge","kind":"points"},{"id":"time_mm_ss","label":"Time\nmm:ss","type":"time_mm_ss","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"ascending_order","label":"ascending order","type":"number","audience":"judge","kind":"points"},{"id":"uniformly_spaced","label":"uniformly spaced","type":"number","audience":"judge","kind":"points"},{"id":"proper_lashings_2_ea_20_pt","label":"Proper lashings\n(2 ea × 20 pt)","type":"number","audience":"judge","kind":"points"},{"id":"tight_and_sturdy","label":"tight and sturdy","type":"number","audience":"judge","kind":"points"},{"id":"secured_to_anchor_post","label":"secured to anchor post","type":"number","audience":"judge","kind":"points"},{"id":"all_patrol_members_complete_the_climb_within_time_limit","label":"All patrol members complete the climb within time limit","type":"timed","audience":"judge","kind":"points"},{"id":"spirited_celebration","label":"Spirited celebration","type":"number","audience":"judge","kind":"points"},{"id":"disassemble_ladder_stack_materials","label":"Disassemble ladder, \nstack materials","type":"number","audience":"judge","kind":"points"},{"id":"more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance","label":"More than one Scout\non ladder at a time \n(-5 pt each instance)","type":"timed","audience":"judge","kind":"points"},{"id":"timed","label":"Time\nmm:ss","type":"timed","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -125,7 +125,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

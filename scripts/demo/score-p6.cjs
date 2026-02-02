@@ -11,7 +11,7 @@ const patrols = [
       "distance_from_target": -5,
       "flag_height": -6,
       "vball_width": -5,
-      "time_mm_ss": 0.20833333333333334
+      "timed": 0.20833333333333334
     }
   },
   {
@@ -22,7 +22,7 @@ const patrols = [
       "distance_from_target": -13,
       "flag_height": -1.5,
       "vball_width": -4,
-      "time_mm_ss": 0.1875
+      "timed": 0.1875
     }
   },
   {
@@ -33,7 +33,7 @@ const patrols = [
       "distance_from_target": -8,
       "flag_height": -1,
       "vball_width": -1,
-      "time_mm_ss": 0.3958333333333333
+      "timed": 0.3958333333333333
     }
   },
   {
@@ -44,7 +44,7 @@ const patrols = [
       "distance_from_target": -13,
       "flag_height": -2,
       "vball_width": -2.5,
-      "time_mm_ss": 0.22916666666666666
+      "timed": 0.22916666666666666
     }
   },
   {
@@ -55,7 +55,7 @@ const patrols = [
       "distance_from_target": -3,
       "flag_height": -0.5,
       "vball_width": -10,
-      "time_mm_ss": 0.3958333333333333
+      "timed": 0.3958333333333333
     }
   },
   {
@@ -66,7 +66,7 @@ const patrols = [
       "distance_from_target": -1,
       "flag_height": -3.5,
       "vball_width": -13.5,
-      "time_mm_ss": 0.4166666666666667
+      "timed": 0.4166666666666667
     }
   },
   {
@@ -77,7 +77,7 @@ const patrols = [
       "distance_from_target": -9,
       "flag_height": -2,
       "vball_width": -3.5,
-      "time_mm_ss": 0.2916666666666667
+      "timed": 0.2916666666666667
     }
   },
   {
@@ -88,7 +88,7 @@ const patrols = [
       "distance_from_target": -6,
       "flag_height": -5,
       "vball_width": -2,
-      "time_mm_ss": 0.1527777777777778
+      "timed": 0.1527777777777778
     }
   },
   {
@@ -99,11 +99,11 @@ const patrols = [
       "distance_from_target": -8,
       "flag_height": -7,
       "vball_width": -5,
-      "time_mm_ss": 0.4166666666666667
+      "timed": 0.4166666666666667
     }
   }
 ];
-const fieldConfigs = [{"id":"check_folder_column_info_change","label":"Check folder Column info change","type":"number","audience":"judge","kind":"points"},{"id":"start","label":"Start","type":"number","audience":"judge","kind":"points"},{"id":"target_destination","label":"Target Destination","type":"number","audience":"judge","kind":"points"},{"id":"distance_from_target","label":"Distance from \nTarget","type":"number","audience":"judge","kind":"points"},{"id":"flag_height","label":"Flag Height","type":"number","audience":"judge","kind":"points"},{"id":"vball_width","label":"Vball width","type":"number","audience":"judge","kind":"points"},{"id":"time_mm_ss","label":"Time\nmm:ss","type":"time_mm_ss","audience":"judge","kind":"points"},{"id":"time","label":"Time","type":"time_mm_ss","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"check_folder_column_info_change","label":"Check folder Column info change","type":"number","audience":"judge","kind":"points"},{"id":"start","label":"Start","type":"number","audience":"judge","kind":"points"},{"id":"target_destination","label":"Target Destination","type":"number","audience":"judge","kind":"points"},{"id":"distance_from_target","label":"Distance from \nTarget","type":"number","audience":"judge","kind":"points"},{"id":"flag_height","label":"Flag Height","type":"number","audience":"judge","kind":"points"},{"id":"vball_width","label":"Vball width","type":"number","audience":"judge","kind":"points"},{"id":"timed","label":"Time\nmm:ss","type":"timed","audience":"judge","kind":"points"},{"id":"time","label":"Time","type":"timed","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -131,7 +131,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

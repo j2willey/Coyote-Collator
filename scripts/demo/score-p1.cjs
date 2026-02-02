@@ -155,7 +155,7 @@ const patrols = [
     }
   }
 ];
-const fieldConfigs = [{"id":"attempt_friction_fire","label":"Attempt Friction Fire","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"charing_or_powder","label":"charing or powder","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"smoke","label":"smoke","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ember","label":"ember","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ignite_tinder","label":"Ignite tinder","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ignite_kindling","label":"ignite kindling","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"water_boils","label":"water boils","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"extinguish_fire_reset","label":"Extinguish fire & reset","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"matches_used_count","label":"Matches Used\n(Count)","type":"number","min":0,"max":20,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"time_to_boil_or_n_a_mm_ss","label":"Time to Boil or N.A.\n\nmm:ss","type":"time_mm_ss","audience":"judge","kind":"points"},{"id":"judges_points_calc","label":"Calculated Points","type":"number","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"attempt_friction_fire","label":"Attempt Friction Fire","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"charing_or_powder","label":"charing or powder","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"smoke","label":"smoke","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ember","label":"ember","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ignite_tinder","label":"Ignite tinder","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ignite_kindling","label":"ignite kindling","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"water_boils","label":"water boils","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"extinguish_fire_reset","label":"Extinguish fire & reset","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"matches_used_count","label":"Matches Used\n(Count)","type":"number","min":0,"max":20,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"time_to_boil_or_n_a_mm_ss","label":"Time to Boil or N.A.\n\nmm:ss","type":"timed","audience":"judge","kind":"points"},{"id":"judges_points_calc","label":"Calculated Points","type":"number","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -183,7 +183,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);

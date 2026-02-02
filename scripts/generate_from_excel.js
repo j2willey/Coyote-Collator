@@ -28,7 +28,7 @@ function toSnakeCase(str) {
 
 function guessType(header) {
     const h = header.toLowerCase();
-    if (h.includes('time')) return 'time_mm_ss';
+    if (h.includes('time')) return 'timed';
     if (h.includes('count') || h.includes('points') || h.includes('number')) return 'number';
     // If it's a checkbox-style column (e.g. "Ignited Tinder")
     if (h.length < 15 && !h.includes('(')) return 'boolean';

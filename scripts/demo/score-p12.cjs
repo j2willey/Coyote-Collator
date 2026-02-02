@@ -7,60 +7,60 @@ const patrols = [
     "name": "Spooky Shrimp",
     "scores": {
       "patrol_sprirt": 5,
-      "time_mm_ss": "DNF"
+      "timed": "DNF"
     }
   },
   {
     "name": "Eaglez",
     "scores": {
       "patrol_sprirt": 4,
-      "time_mm_ss": 0.9270833333333334
+      "timed": 0.9270833333333334
     }
   },
   {
     "name": "Chunky Monkeys",
     "scores": {
       "patrol_sprirt": 5,
-      "time_mm_ss": 0.5
+      "timed": 0.5
     }
   },
   {
     "name": "Raptors",
     "scores": {
       "patrol_sprirt": 4,
-      "time_mm_ss": 0.6881944444444444
+      "timed": 0.6881944444444444
     }
   },
   {
     "name": "Orcas",
     "scores": {
       "patrol_sprirt": 5,
-      "time_mm_ss": 0.6458333333333334
+      "timed": 0.6458333333333334
     }
   },
   {
     "name": "Ice Dragons",
     "scores": {
       "patrol_sprirt": 5,
-      "time_mm_ss": 0.5763888888888888
+      "timed": 0.5763888888888888
     }
   },
   {
     "name": "Fearless Firebirds",
     "scores": {
       "patrol_sprirt": 5,
-      "time_mm_ss": 0.8395833333333333
+      "timed": 0.8395833333333333
     }
   },
   {
     "name": "Falcons",
     "scores": {
       "patrol_sprirt": 5,
-      "time_mm_ss": 0.6375
+      "timed": 0.6375
     }
   }
 ];
-const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number","audience":"judge","kind":"points"},{"id":"time_mm_ss","label":"Time\nmm:ss","type":"time_mm_ss","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number","audience":"judge","kind":"points"},{"id":"timed","label":"Time\nmm:ss","type":"timed","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -88,7 +88,7 @@ async function run() {
             if (!field) continue;
             if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
-            if (field.type === 'time_mm_ss') {
+            if (field.type === 'timed') {
                 let mm = '00', ss = '00';
                 if (typeof val === 'number') {
                     const totalSeconds = Math.round(val * 24 * 60 * 60);
