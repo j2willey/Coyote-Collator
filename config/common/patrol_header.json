@@ -1,0 +1,35 @@
+[
+  {
+    "id": "patrol_flag",
+    "label": "Patrol Flag?",
+    "sortOrder": 1,
+    "type": "range",
+    "min": 0,
+    "max": 5,
+    "defaultValue": 0,
+    "audience": "judge",
+    "kind": "points"
+  },
+  {
+    "id": "patrol_yell",
+    "label": "Patrol Yell?",
+    "sortOrder": 2,
+    "type": "range",
+    "min": 0,
+    "max": 5,
+    "defaultValue": 0,
+    "audience": "judge",
+    "kind": "points"
+  },
+  {
+    "id": "patrol_spirit",
+    "label": "Patrol Spirit",
+    "sortOrder": 3,
+    "type": "range",
+    "min": 0,
+    "max": 5,
+    "defaultValue": 0,
+    "audience": "judge",
+    "kind": "points"
+  }
+]

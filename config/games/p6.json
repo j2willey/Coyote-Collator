@@ -2,6 +2,9 @@
   "id": "p6",
   "name": "Compass Game",
   "type": "patrol",
+  "includes": [
+    "../common/patrol_header.json"
+  ],
   "fields": [
     {
       "id": "check_folder_column_info_change",
@@ -59,5 +62,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/patrol_footer.json"
   ]
 }

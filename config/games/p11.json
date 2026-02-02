@@ -2,6 +2,9 @@
   "id": "p11",
   "name": "Raft-a-drift at Sea",
   "type": "patrol",
+  "includes": [
+    "../common/patrol_header.json"
+  ],
   "fields": [
     {
       "id": "patrol_sprirt",
@@ -38,5 +41,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/patrol_footer.json"
   ]
 }

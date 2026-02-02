@@ -2,6 +2,9 @@
   "id": "p10",
   "name": "Ladder Lashing",
   "type": "patrol",
+  "includes": [
+    "../common/patrol_header.json"
+  ],
   "fields": [
     {
       "id": "ascending_order",
@@ -73,5 +76,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/patrol_footer.json"
   ]
 }

@@ -2,6 +2,9 @@
   "id": "p19",
   "name": "Sahara Oasis, Savanna  Irrigation",
   "type": "patrol",
+  "includes": [
+    "../common/patrol_header.json"
+  ],
   "fields": [
     {
       "id": "rig_bucket_w_knots",
@@ -108,5 +111,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/patrol_footer.json"
   ]
 }

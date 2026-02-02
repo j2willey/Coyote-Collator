@@ -2,6 +2,9 @@
   "id": "t8",
   "name": "Campsite Judges Award",
   "type": "troop",
+  "includes": [
+    "../common/troop_header.json"
+  ],
   "fields": [
     {
       "id": "points",
@@ -10,5 +13,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/troop_footer.json"
   ]
 }

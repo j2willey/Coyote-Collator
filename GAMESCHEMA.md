@@ -5,7 +5,7 @@ This document describes the structure of the JSON configuration files used to de
 ## Directory Structure
 
 *   `config/games/*.json`: Definitions for individual games (Patrol, Troop, or Exhibition).
-*   `config/common.json`: Definitions for scoring fields common to all games (e.g., "Patrol Spirit").
+*   `config/common/*.json`: Shared field definitions (e.g., headers or footers) included by multiple games.
 
 ## Game Definition (`config/games/*.json`)
 
@@ -16,9 +16,11 @@ Each file represents a single game/activity.
   "id": "p1",
   "name": "Boiling the Ocean",
   "type": "patrol",
+  "includes": ["../common/patrol_header.json"],
   "fields": [
     ... // Array of Field Definitions
-  ]
+  ],
+  "appends": ["../common/patrol_footer.json"]
 }
 ```
 
@@ -29,13 +31,15 @@ Each file represents a single game/activity.
 | `id` | `string` | Unique identifier. Format convention: `p#` for Patrol, `t#` for Troop, `e#` for Exhibition. |
 | `name` | `string` | Display name of the game. |
 | `type` | `string` | Category of the game. Allowed values: `"patrol"`, `"troop"`, `"exhibition"`. |
-| `fields` | `array` | List of scoring fields specific to this game. |
+| `includes` | `array` | Optional. List of relative paths to JSON files containing fields to be inserted **above** the local `fields`. |
+| `fields` | `array` | List of scoring fields specific to this game (the "meat" of the sandwich). |
+| `appends` | `array` | Optional. List of relative paths to JSON files containing fields to be inserted **below** the local `fields`. |
 
 ---
 
 ## Field Definition
 
-Fields define a single input on the scoring form. These are used in both the `fields` array of a game and in `common.json`.
+Fields define a single input on the scoring form. These are used in the `fields` array or inside included/append files.
 
 ```json
 {
@@ -78,21 +82,27 @@ Fields define a single input on the scoring form. These are used in both the `fi
 
 ---
 
-## Common Scoring (`config/common.json`)
+## Composition Strategy ("The Sandwich")
 
-Defines fields that are automatically appended to **every** game. Use this for universal metrics like "Patrol Spirit" or "Uniform Inspection".
+The server merges fields in a specific order to create the final form layout:
 
-Example:
+1.  **Header (`includes`):** Shared fields that appear at the top of many forms (e.g. Patrol Flag, Yell).
+2.  **Meat (`fields`):** Station-specific fields unique to that game.
+3.  **Footer (`appends`):** Shared fields that appear at the bottom (e.g. Penalties, Judge Notes).
+
+Example of a shared field file (e.g. `config/common/patrol_header.json`):
 
 ```json
 [
   {
     "id": "patrol_spirit",
     "label": "Patrol Spirit",
-    "type": "number",
+    "type": "range",
     "min": 0,
-    "max": 10,
-    "sortOrder": 100
+    "max": 5,
+    "sortOrder": 1
   }
 ]
 ```
+
+These common files must contain an **array** of Field objects.

@@ -2,6 +2,9 @@
   "id": "p20",
   "name": "Walking A Frame",
   "type": "patrol",
+  "includes": [
+    "../common/patrol_header.json"
+  ],
   "fields": [
     {
       "id": "patrol_sprirt",
@@ -17,5 +20,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/patrol_footer.json"
   ]
 }

@@ -2,6 +2,9 @@
   "id": "p3",
   "name": "Showtime in Atlantis",
   "type": "patrol",
+  "includes": [
+    "../common/patrol_header.json"
+  ],
   "fields": [
     {
       "id": "skit_name",
@@ -24,5 +27,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/patrol_footer.json"
   ]
 }

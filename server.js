@@ -68,14 +68,7 @@ app.use(express.static('public'));
 app.get('/games.json', (req, res) => {
   try {
     const configDir = path.join(__dirname, 'config');
-    const commonPath = path.join(configDir, 'common.json');
     const gamesDir = path.join(configDir, 'games');
-
-    // Read common scoring
-    let commonScoring = [];
-    if (fs.existsSync(commonPath)) {
-        commonScoring = JSON.parse(fs.readFileSync(commonPath, 'utf-8'));
-    }
 
     // Read games
     const games = [];
@@ -83,8 +76,47 @@ app.get('/games.json', (req, res) => {
       const files = fs.readdirSync(gamesDir);
       for (const file of files) {
         if (file.endsWith('.json')) {
-          const content = fs.readFileSync(path.join(gamesDir, file), 'utf-8');
-          games.push(JSON.parse(content));
+          const filePath = path.join(gamesDir, file);
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const game = JSON.parse(content);
+
+          // Sandwich Composition Logic
+          let finalFields = [];
+
+          // Helper to resolve and read fields from a path or array of paths
+          const resolveFields = (configPath) => {
+            const paths = Array.isArray(configPath) ? configPath : [configPath];
+            let fields = [];
+            for (const p of paths) {
+              try {
+                const fullPath = path.resolve(path.dirname(filePath), p);
+                if (fs.existsSync(fullPath)) {
+                  const includeData = JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
+                  fields = fields.concat(Array.isArray(includeData) ? includeData : []);
+                } else {
+                  console.warn(`Warning: File not found: ${fullPath} in ${file}`);
+                }
+              } catch (err) {
+                console.warn(`Warning: Could not parse file ${p} for ${file}: ${err.message}`);
+              }
+            }
+            return fields;
+          };
+
+          // Step A: Header (includes)
+          if (game.includes) finalFields = finalFields.concat(resolveFields(game.includes));
+          // Compatibility for previous "include" singular
+          if (game.include && !game.includes) finalFields = finalFields.concat(resolveFields(game.include));
+
+          // Step B: Meat (fields)
+          finalFields = finalFields.concat(game.fields || []);
+
+          // Step C: Footer (appends)
+          if (game.appends) finalFields = finalFields.concat(resolveFields(game.appends));
+
+          game.fields = finalFields;
+
+          games.push(game);
         }
       }
     }
@@ -105,7 +137,7 @@ app.get('/games.json', (req, res) => {
 
     res.json({
       metadata: { version: "1.0", generated_at: new Date().toISOString() },
-      common_scoring: commonScoring,
+      common_scoring: [], // Empty now that fields are merged per-game
       games: games
     });
   } catch (err) {
@@ -194,6 +226,58 @@ app.get('/api/admin/all-data', (req, res) => {
 
     res.json({ scores: parsed, stats, game_status: statusMap });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// GET /api/export (Download CSV)
+app.get('/api/export', (req, res) => {
+    try {
+        const rows = db.prepare(`
+            SELECT s.uuid, s.game_id, s.timestamp, e.name as entity_name, e.troop_number, e.type as entity_type, s.score_payload
+            FROM scores s JOIN entities e ON s.entity_id = e.id
+            ORDER BY s.timestamp DESC
+        `).all();
+
+        if (rows.length === 0) {
+            return res.send("No scores to export.");
+        }
+
+        // Get unique fields from all payloads (to handle dynamic schema)
+        const fieldSet = new Set();
+        const parsedRows = rows.map(r => {
+            const payload = JSON.parse(r.score_payload);
+            Object.keys(payload).forEach(k => fieldSet.add(k));
+            return { ...r, payload };
+        });
+
+        const dynamicFields = Array.from(fieldSet).sort();
+        const headers = ['UUID', 'Game ID', 'Timestamp', 'Troop', 'Entity Name', 'Entity Type', ...dynamicFields];
+
+        let csv = headers.join(',') + '\n';
+
+        parsedRows.forEach(r => {
+            const line = [
+                r.uuid,
+                r.game_id,
+                new Date(r.timestamp).toISOString(),
+                r.troop_number,
+                `"${r.entity_name}"`,
+                r.entity_type,
+                ...dynamicFields.map(f => {
+                    const val = r.payload[f];
+                    return (val === undefined || val === null) ? '' : `"${String(val).replace(/"/g, '""')}"`;
+                })
+            ];
+            csv += line.join(',') + '\n';
+        });
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=camporee_scores.csv');
+        res.send(csv);
+
+    } catch (err) {
+        console.error('Export error:', err);
+        res.status(500).send('Error generating export');
+    }
 });
 
 // ADMIN: Toggle Game Status

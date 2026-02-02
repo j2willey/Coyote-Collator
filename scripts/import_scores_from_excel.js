@@ -176,7 +176,31 @@ async function runImport() {
         }
 
         const headers = rows[headerRowIdx];
-        const allFields = [...(game.fields || []), ...commonScoring];
+
+        // Sandwich Logic for Import
+        let finalFields = [];
+        const resolveFields = (configPath, gamePath) => {
+            const paths = Array.isArray(configPath) ? configPath : [configPath];
+            let fields = [];
+            for (const p of paths) {
+                try {
+                    const fullPath = path.resolve(path.dirname(gamePath), p);
+                    if (fs.existsSync(fullPath)) {
+                        const data = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+                        fields = fields.concat(Array.isArray(data) ? data : []);
+                    }
+                } catch (e) {
+                    console.warn(`    !! Warning: Could not load ${p}`);
+                }
+            }
+            return fields;
+        };
+
+        if (game.includes) finalFields = finalFields.concat(resolveFields(game.includes, path.join(GAMES_DIR, `${game.id}.json`)));
+        finalFields = finalFields.concat(game.fields || []);
+        if (game.appends) finalFields = finalFields.concat(resolveFields(game.appends, path.join(GAMES_DIR, `${game.id}.json`)));
+
+        const allFields = finalFields;
         const fieldMap = {}; // colIndex -> fieldId
 
         headers.forEach((h, idx) => {

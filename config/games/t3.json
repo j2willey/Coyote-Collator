@@ -2,6 +2,9 @@
   "id": "t3",
   "name": "Cooking Dish",
   "type": "troop",
+  "includes": [
+    "../common/troop_header.json"
+  ],
   "fields": [
     {
       "id": "dish",
@@ -17,5 +20,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/troop_footer.json"
   ]
 }

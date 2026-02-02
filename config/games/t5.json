@@ -2,6 +2,9 @@
   "id": "t5",
   "name": "Cooking Mystery item",
   "type": "troop",
+  "includes": [
+    "../common/troop_header.json"
+  ],
   "fields": [
     {
       "id": "dish",
@@ -31,5 +34,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/troop_footer.json"
   ]
 }

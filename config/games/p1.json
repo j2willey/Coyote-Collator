@@ -2,6 +2,9 @@
   "id": "p1",
   "name": "Boiling the Ocean",
   "type": "patrol",
+  "includes": [
+    "../common/patrol_header.json"
+  ],
   "fields": [
     {
       "id": "attempt_friction_fire",
@@ -107,5 +110,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/patrol_footer.json"
   ]
 }

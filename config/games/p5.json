@@ -2,6 +2,9 @@
   "id": "p5",
   "name": "Catch Fish Fry Fly",
   "type": "patrol",
+  "includes": [
+    "../common/patrol_header.json"
+  ],
   "fields": [
     {
       "id": "mix_batter",
@@ -66,5 +69,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/patrol_footer.json"
   ]
 }

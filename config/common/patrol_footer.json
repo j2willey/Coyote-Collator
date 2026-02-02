@@ -1,0 +1,23 @@
+[
+  {
+    "id": "unscoutlike",
+    "label": "Un-Scout-like Behavior (Penalty)",
+    "sortOrder": 998,
+    "type": "number",
+    "min": 0,
+    "max": 100,
+    "helperText": "Enter POSITIVE number to deduct points",
+    "defaultValue": 0,
+    "audience": "judge",
+    "kind": "points"
+  },
+  {
+    "id": "judge_notes",
+    "label": "Judge Notes / Comments",
+    "sortOrder": 999,
+    "type": "textarea",
+    "placeholder": "Optional notes on performance...",
+    "audience": "judge",
+    "kind": "metric"
+  }
+]

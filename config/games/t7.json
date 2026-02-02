@@ -2,6 +2,9 @@
   "id": "t7",
   "name": "Campsite Inspection",
   "type": "troop",
+  "includes": [
+    "../common/troop_header.json"
+  ],
   "fields": [
     {
       "id": "u_s_and_unit_flag_posted",
@@ -150,5 +153,8 @@
       "audience": "judge",
       "kind": "points"
     }
+  ],
+  "appends": [
+    "../common/troop_footer.json"
   ]
 }
