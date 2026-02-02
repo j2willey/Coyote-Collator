@@ -147,6 +147,11 @@ function setupNavigation() {
         navRegistration.addEventListener('click', () => switchView('registration'));
     }
 
+    const exportAwardsBtn = document.getElementById('btn-export-awards');
+    if (exportAwardsBtn) {
+        exportAwardsBtn.onclick = () => exportAwardsCSV();
+    }
+
     // Form Listener
     const regForm = document.getElementById('reg-form');
     if (regForm) {
@@ -222,6 +227,9 @@ function switchView(viewName, pushToHistory = true) {
         if(regBtn) regBtn.classList.add('active');
         setSubtitle('Registration');
         renderRoster();
+    } else if (viewName === 'awards') {
+        document.getElementById('view-awards').classList.remove('hidden');
+        setSubtitle('Awards & Exports');
     }
 }
 
@@ -230,6 +238,122 @@ function setSubtitle(text) {
     if (subtitle) {
         subtitle.innerText = text ? ` - ${text}` : '';
     }
+}
+
+function exportAwardsCSV() {
+    const el1 = document.getElementById('awards-line1');
+    const el2 = document.getElementById('awards-line2');
+    const line1 = el1?.value || el1?.placeholder || "";
+    const line2 = el2?.value || el2?.placeholder || "";
+
+    const rows = [];
+    if (line1) rows.push([line1]);
+    if (line2) rows.push([line2]);
+    if (line1 || line2) rows.push([]); // Spacer row
+
+    rows.push(["Category", "Rank", "Entity Name", "Troop #"]);
+    const pointsMap = calculateScoreContext();
+
+    // 1. All Individual Games
+    const games = appData.games.filter(g => (g.type || 'patrol') === currentViewMode);
+
+    games.forEach(game => {
+        const gameScores = appData.scores.filter(s => s.game_id === game.id).map(score => {
+            let total = 0;
+            const fields = [...(game.fields || []), ...(appData.commonScoring || [])];
+            fields.forEach(f => {
+                if (f.kind === 'points' || f.kind === 'penalty') {
+                    const val = parseFloat(score.score_payload[f.id]);
+                    if (!isNaN(val)) {
+                        if (f.kind === 'penalty') total -= val;
+                        else total += val;
+                    }
+                }
+            });
+            return { ...score, _total: total };
+        });
+
+        // Dense Rank for this game
+        const sorted = [...gameScores].sort((a,b) => b._total - a._total);
+        let curRank = 0;
+        let lastT = null;
+        sorted.forEach(s => {
+            if (s._total !== lastT) {
+                curRank++;
+                lastT = s._total;
+            }
+            s._autoRank = getOrdinalSuffix(curRank);
+
+            const finalRank = s.score_payload.manual_rank || s._autoRank;
+            const rankClean = String(finalRank).toLowerCase().trim();
+            const topRanks = ['1', '1st', '2', '2nd', '3', '3rd'];
+
+            if (topRanks.includes(rankClean)) {
+                rows.push([
+                    formatGameTitle(game),
+                    finalRank,
+                    s.entity_name,
+                    s.troop_number
+                ]);
+            }
+        });
+    });
+
+    // 2. Overall Leaderboard
+    const entities = appData.entities.filter(e => e.type === currentViewMode);
+    entities.forEach(p => {
+        let total = 0;
+        games.forEach(g => {
+            if (pointsMap[p.id] && pointsMap[p.id][g.id]) {
+                total += pointsMap[p.id][g.id];
+            }
+        });
+        p._leaderboardTotal = total;
+    });
+
+    const lbSorted = [...entities].sort((a,b) => b._leaderboardTotal - a._leaderboardTotal);
+    let curLBRank = 0;
+    let lastLBT = null;
+    lbSorted.forEach(p => {
+        if (p._leaderboardTotal !== lastLBT) {
+            curLBRank++;
+            lastLBT = p._leaderboardTotal;
+        }
+        p._autoOverallRank = getOrdinalSuffix(curLBRank);
+        const finalRank = p.manual_rank || p._autoOverallRank;
+        const rankClean = String(finalRank).toLowerCase().trim();
+
+        // Match 1st-3rd OR if it has ANY text but isn't 4th+?
+        // User asked for: 1st-3rd OR custom text like 'Top Dog'
+        const topRanks = ['1', '1st', '2', '2nd', '3', '3rd'];
+        const isStandardTop = topRanks.includes(rankClean);
+        const isCustom = p.manual_rank && p.manual_rank.length > 0;
+
+        if (isStandardTop || isCustom) {
+            rows.push([
+                "OVERALL",
+                finalRank,
+                p.name,
+                p.troop_number
+            ]);
+        }
+    });
+
+    if (rows.length === 1) {
+        alert("No award-level ranks found yet.");
+        return;
+    }
+
+    const csvContent = "data:text/csv;charset=utf-8,"
+        + rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Coyote_Awards_${currentViewMode}_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 function toggleFinalMode(checked) {

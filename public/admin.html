@@ -42,7 +42,7 @@
                         <span style="font-size: 3rem;">⏱️</span>
                         <br>Scoring
                     </button>
-                    <button class="dashboard-link-btn disabled" onclick="alert('Awards coming soon!')" style="opacity: 0.6; cursor: not-allowed;">
+                    <button class="dashboard-link-btn" onclick="switchView('awards', true)">
                         <span style="font-size: 3rem;">🏆</span>
                         <br>Awards
                     </button>
@@ -93,6 +93,29 @@
 
             <div id="roster-tree" style="display:block; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; background: #fff;">
                 <!-- Tree Injected Here -->
+            </div>
+        </section>
+
+        <!-- View 5: Awards -->
+        <section id="view-awards" class="hidden">
+            <div class="controls">
+                <h2 class="hidden">Awards & Exports</h2>
+                <button id="btn-export-awards" class="btn btn-success">Download Awards CSV</button>
+            </div>
+            <div class="table-container">
+                <div id="awards-preview">
+                    <div style="margin-bottom: 20px; max-width: 500px;">
+                        <div class="mb-3">
+                            <label for="awards-line1" class="form-label fw-bold">Line 1</label>
+                            <input type="text" class="form-control" id="awards-line1" placeholder="Coyote Creek District Camporee" value="">
+                        </div>
+                        <div class="mb-3">
+                            <label for="awards-line2" class="form-label fw-bold">Line 2</label>
+                            <input type="text" class="form-control" id="awards-line2" placeholder="Under the Sea  May 16-18 2025" value="">
+                        </div>
+                    </div>
+                    <p class="text-muted">Generate a CSV of all 1st, 2nd, and 3rd place winners for all games, plus the overall leaderboard.</p>
+                </div>
             </div>
         </section>
     </main>
