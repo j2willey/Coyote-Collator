@@ -51,7 +51,13 @@
         <section id="view-detail" class="hidden">
             <div class="controls">
                 <h2 id="detail-title">Game Detail</h2>
-                <button id="back-to-overview">Back to Overview</button>
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="toggle-compact-view" style="transform: scale(1.2);">
+                        <label class="form-check-label ms-2 fw-bold" for="toggle-compact-view">Final Ranking Mode</label>
+                    </div>
+                    <button id="back-to-overview">Back to Overview</button>
+                </div>
             </div>
             <div class="table-container">
                 <table id="detail-table">
