@@ -257,6 +257,19 @@ function exportAwardsCSV() {
     // 1. All Individual Games
     const games = appData.games.filter(g => (g.type || 'patrol') === currentViewMode);
 
+    // Identify any "entryname" fields across these games to include in the export
+    const entryNameFieldConfigs = [];
+    games.forEach(g => {
+        const fields = [...(g.fields||[]), ...(appData.commonScoring||[])];
+        fields.forEach(f => {
+            if (f.kind === 'entryname' && !entryNameFieldConfigs.find(x => x.id === f.id)) {
+                entryNameFieldConfigs.push(f);
+            }
+        });
+    });
+
+    rows.push(["Category", "Rank", "Entity Name", "Troop #", ...entryNameFieldConfigs.map(f => f.label)]);
+
     games.forEach(game => {
         const gameScores = appData.scores.filter(s => s.game_id === game.id).map(score => {
             let total = 0;
@@ -289,12 +302,17 @@ function exportAwardsCSV() {
             const topRanks = ['1', '1st', '2', '2nd', '3', '3rd'];
 
             if (topRanks.includes(rankClean)) {
-                rows.push([
+                const row = [
                     formatGameTitle(game),
                     finalRank,
                     s.entity_name,
                     s.troop_number
-                ]);
+                ];
+                // Append any entryname field values
+                entryNameFieldConfigs.forEach(f => {
+                    row.push(s.score_payload[f.id] || "");
+                });
+                rows.push(row);
             }
         });
     });
@@ -330,12 +348,15 @@ function exportAwardsCSV() {
         const isCustom = p.manual_rank && p.manual_rank.length > 0;
 
         if (isStandardTop || isCustom) {
-            rows.push([
+            const row = [
                 "OVERALL",
                 finalRank,
                 p.name,
                 p.troop_number
-            ]);
+            ];
+            // Spacer cells for entryname columns on the overall leaderboard
+            entryNameFieldConfigs.forEach(() => row.push(""));
+            rows.push(row);
         }
     });
 
@@ -733,7 +754,8 @@ function openGameDetail(gameId) {
 
     scoringFields.forEach(field => {
         const th = createTh(field.label);
-        th.className += ' rotate-header collapsible-col';
+        th.className += ' rotate-header';
+        if (field.kind !== 'entryname') th.className += ' collapsible-col';
         th.title = field.label; // Tooltip for readability
         addSortBtn(th, field.id);
         headerRow.appendChild(th);
@@ -797,7 +819,7 @@ function openGameDetail(gameId) {
             const val = score.score_payload[field.id];
             if (field.audience === 'admin') {
                 const td = document.createElement('td');
-                td.classList.add('collapsible-col');
+                if (field.kind !== 'entryname') td.classList.add('collapsible-col');
                 const input = document.createElement('input');
                 input.className = 'admin-input';
                 input.type = field.type === 'number' ? 'number' : 'text';
@@ -838,7 +860,7 @@ function openGameDetail(gameId) {
                 tr.appendChild(td);
             } else {
                 const td = createTd(formatValue(val, field.type));
-                td.classList.add('collapsible-col');
+                if (field.kind !== 'entryname') td.classList.add('collapsible-col');
                 if (field.kind === 'penalty') {
                     td.style.color = 'red';
                     td.style.fontWeight = 'bold';

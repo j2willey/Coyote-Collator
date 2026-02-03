@@ -65,7 +65,7 @@ Fields define a single input on the scoring form. These are used in the `fields`
 | `placeholder` | `string` | No | Helper text inside the input. |
 | `options` | `string[]`| No | Array of strings for `select` type. |
 | `audience` | `string` | No | Controls visibility. `"judge"` (default): visible to field judges. `"admin"`: hidden from judges, visible/editable only by admin. |
-| `kind` | `string` | No | Controls summation behavior. `"points"` (default): value is added to "Total Score". `"penalty"`: value is subtracted from "Total Score" (displayed in red). `"metric"`: value is raw data (e.g. time, counts) and not added to total. |
+| `kind` | `string` | No | Controls summation behavior. <br> - `"points"` (default): value is added to "Total Score". <br> - `"penalty"`: value is subtracted from "Total Score" (displayed in red). <br> - `"metric"`: value is raw data (not added to total). <br> - `"entryname"`: Textual metadata (not added to total). Visible in Admin finalized views. |
 | `sortOrder` | `number` | No | Controls the display order of fields. Lower numbers appear first. Defaults to 900. |
 
 ### Supported Field Types
