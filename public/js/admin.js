@@ -172,6 +172,11 @@ function setupNavigation() {
         viewModeSelect.addEventListener('change', (e) => {
             currentViewMode = e.target.value;
             refreshCurrentView();
+            // Also hide stickers preview if changing modes
+            const previewContainer = document.getElementById('stickers-preview-container');
+            const printBtn = document.getElementById('btn-print-preview');
+            if (previewContainer) previewContainer.classList.add('hidden');
+            if (printBtn) printBtn.classList.add('hidden');
         });
     }
 }
@@ -189,7 +194,20 @@ function refreshCurrentView() {
     if (currentView === 'overview') {
         renderOverviewList();
     }
-    else if (currentView === 'matrix') renderMatrix();
+    else if (currentView === 'matrix') {
+        renderMatrix();
+    }
+    else if (currentView === 'awards') {
+        // Clear preview container if we switch modes while on Awards view
+        const previewContainer = document.getElementById('stickers-preview-container');
+        const printBtn = document.getElementById('btn-print-preview');
+        if (previewContainer && !previewContainer.classList.contains('hidden')) {
+            previewContainer.classList.add('hidden');
+        }
+        if (printBtn && !printBtn.classList.contains('hidden')) {
+            printBtn.classList.add('hidden');
+        }
+    }
 }
 
 function switchView(viewName, pushToHistory = true) {
