@@ -323,37 +323,15 @@ function setSubtitle(text) {
     }
 }
 
-function exportAwardsCSV() {
-    const el1 = document.getElementById('awards-line1');
-    const el2 = document.getElementById('awards-line2');
-    const line1 = el1?.value || el1?.placeholder || "";
-    const line2 = el2?.value || el2?.placeholder || "";
-
-    const rows = [];
-    if (line1) rows.push([line1]);
-    if (line2) rows.push([line2]);
-    if (line1 || line2) rows.push([]); // Spacer row
-
-    rows.push(["Category", "Rank", "Entity Name", "Troop #"]);
+function getWinnersRegistry() {
+    const registry = [];
     const pointsMap = calculateScoreContext();
 
-    // 1. All Individual Games
+    // 1. Individual Games
     const games = appData.games.filter(g => (g.type || 'patrol') === currentViewMode);
 
-    // Identify any "entryname" fields across these games to include in the export
-    const entryNameFieldConfigs = [];
-    games.forEach(g => {
-        const fields = [...(g.fields||[]), ...(appData.commonScoring||[])];
-        fields.forEach(f => {
-            if (f.kind === 'entryname' && !entryNameFieldConfigs.find(x => x.id === f.id)) {
-                entryNameFieldConfigs.push(f);
-            }
-        });
-    });
-
-    rows.push(["Category", "Rank", "Entity Name", "Troop #", ...entryNameFieldConfigs.map(f => f.label)]);
-
     games.forEach(game => {
+        // Calculate scores for this game
         const gameScores = appData.scores.filter(s => s.game_id === game.id).map(score => {
             let total = 0;
             const fields = [...(game.fields || []), ...(appData.commonScoring || [])];
@@ -369,33 +347,49 @@ function exportAwardsCSV() {
             return { ...score, _total: total };
         });
 
-        // Dense Rank for this game
+        // Sort
         const sorted = [...gameScores].sort((a,b) => b._total - a._total);
         let curRank = 0;
         let lastT = null;
+
+        // Entry fields for this game
+        const entryFields = [...(game.fields || []), ...(appData.commonScoring || [])].filter(f => f.kind === 'entryname');
+
         sorted.forEach(s => {
             if (s._total !== lastT) {
                 curRank++;
                 lastT = s._total;
             }
             s._autoRank = getOrdinalSuffix(curRank);
-
             const finalRank = s.score_payload.manual_rank || s._autoRank;
             const rankClean = String(finalRank).toLowerCase().trim();
             const topRanks = ['1', '1st', '2', '2nd', '3', '3rd'];
 
             if (topRanks.includes(rankClean)) {
-                const row = [
-                    formatGameTitle(game),
-                    finalRank,
-                    s.entity_name,
-                    s.troop_number
-                ];
-                // Append any entryname field values
-                entryNameFieldConfigs.forEach(f => {
-                    row.push(s.score_payload[f.id] || "");
+                // Construct line4Text
+                let line4 = `${finalRank} Place - T${s.troop_number}`;
+                if (currentViewMode === 'patrol') {
+                    line4 += ` ${s.entity_name}`;
+                }
+                const entryVals = entryFields.map(f => s.score_payload[f.id]).filter(v => v).join(", ");
+                if (entryVals) line4 += `, ${entryVals}`;
+
+                // Collect entry values
+                const entryData = {};
+                entryFields.forEach(f => {
+                    entryData[f.id] = s.score_payload[f.id];
                 });
-                rows.push(row);
+
+                registry.push({
+                    type: 'game',
+                    gameId: game.id,
+                    gameName: formatGameTitle(game),
+                    rank: finalRank,
+                    entityName: s.entity_name,
+                    troopNumber: s.troop_number,
+                    line4Text: line4,
+                    entryData: entryData
+                });
             }
         });
     });
@@ -415,6 +409,7 @@ function exportAwardsCSV() {
     const lbSorted = [...entities].sort((a,b) => b._leaderboardTotal - a._leaderboardTotal);
     let curLBRank = 0;
     let lastLBT = null;
+
     lbSorted.forEach(p => {
         if (p._leaderboardTotal !== lastLBT) {
             curLBRank++;
@@ -423,24 +418,72 @@ function exportAwardsCSV() {
         p._autoOverallRank = getOrdinalSuffix(curLBRank);
         const finalRank = p.manual_rank || p._autoOverallRank;
         const rankClean = String(finalRank).toLowerCase().trim();
-
-        // Match 1st-3rd OR if it has ANY text but isn't 4th+?
-        // User asked for: 1st-3rd OR custom text like 'Top Dog'
         const topRanks = ['1', '1st', '2', '2nd', '3', '3rd'];
-        const isStandardTop = topRanks.includes(rankClean);
-        const isCustom = p.manual_rank && p.manual_rank.length > 0;
 
-        if (isStandardTop || isCustom) {
-            const row = [
-                "OVERALL",
-                finalRank,
-                p.name,
-                p.troop_number
-            ];
-            // Spacer cells for entryname columns on the overall leaderboard
-            entryNameFieldConfigs.forEach(() => row.push(""));
-            rows.push(row);
+        if (topRanks.includes(rankClean) || (p.manual_rank && p.manual_rank.length > 0)) {
+            let line4 = `${finalRank}${topRanks.includes(rankClean) ? " Place" : ""} - T${p.troop_number}`;
+            if (currentViewMode === 'patrol') {
+                line4 += ` ${p.name}`;
+            }
+
+            registry.push({
+                type: 'overall',
+                gameId: 'OVERALL',
+                gameName: "OVERALL",
+                rank: finalRank,
+                entityName: p.name,
+                troopNumber: p.troop_number,
+                line4Text: line4,
+                entryData: {}
+            });
         }
+    });
+
+    return registry;
+}
+
+function exportAwardsCSV() {
+    const el1 = document.getElementById('awards-line1');
+    const el2 = document.getElementById('awards-line2');
+    const line1 = el1?.value || el1?.placeholder || "";
+    const line2 = el2?.value || el2?.placeholder || "";
+
+    const rows = [];
+    if (line1) rows.push([line1]);
+    if (line2) rows.push([line2]);
+    if (line1 || line2) rows.push([]); // Spacer row
+
+    rows.push(["Category", "Rank", "Entity Name", "Troop #"]);
+
+    // 1. All Individual Games
+    const games = appData.games.filter(g => (g.type || 'patrol') === currentViewMode);
+
+    // Identify any "entryname" fields across these games to include in the export
+    const entryNameFieldConfigs = [];
+    games.forEach(g => {
+        const fields = [...(g.fields||[]), ...(appData.commonScoring||[])];
+        fields.forEach(f => {
+            if (f.kind === 'entryname' && !entryNameFieldConfigs.find(x => x.id === f.id)) {
+                entryNameFieldConfigs.push(f);
+            }
+        });
+    });
+
+    rows.push(["Category", "Rank", "Entity Name", "Troop #", ...entryNameFieldConfigs.map(f => f.label)]);
+
+    const winners = getWinnersRegistry();
+
+    winners.forEach(w => {
+        const row = [
+            w.gameName,
+            w.rank,
+            w.entityName,
+            w.troopNumber
+        ];
+        entryNameFieldConfigs.forEach(f => {
+            row.push(w.entryData[f.id] || "");
+        });
+        rows.push(row);
     });
 
     if (rows.length === 1) {
@@ -466,111 +509,27 @@ function renderStickers(autoPrint = true) {
     const headerLine1 = el1?.value || "";
     const headerLine2 = el2?.value || "";
 
-    const pointsMap = calculateScoreContext();
-    const games = appData.games.filter(g => (g.type || 'patrol') === currentViewMode);
-
+    const winners = getWinnersRegistry();
     const resultsByGroup = []; // Each item is { title: string, winners: [] }
+    let currentGroup = null;
 
-    // 1. Individual Games
-    games.forEach(game => {
-        const gameScores = appData.scores.filter(s => s.game_id === game.id).map(score => {
-            let total = 0;
-            const fields = [...(game.fields || []), ...(appData.commonScoring || [])];
-            fields.forEach(f => {
-                if (f.kind === 'points' || f.kind === 'penalty') {
-                    const val = parseFloat(score.score_payload[f.id]);
-                    if (!isNaN(val)) {
-                        if (f.kind === 'penalty') total -= val;
-                        else total += val;
-                    }
-                }
-            });
-            return { ...score, _total: total };
-        });
+    winners.forEach(w => {
+        const groupTitle = w.type === 'overall' ? 'OVERALL LEADERBOARD' : w.gameName;
 
-        const sorted = [...gameScores].sort((a,b) => b._total - a._total);
-        let curRank = 0;
-        let lastT = null;
-        const gameWinners = [];
-
-        // Identify any "entryname" fields for this game
-        const entryFields = [...(game.fields || []), ...(appData.commonScoring || [])].filter(f => f.kind === 'entryname');
-
-        sorted.forEach(s => {
-            if (s._total !== lastT) {
-                curRank++;
-                lastT = s._total;
-            }
-            s._autoRank = getOrdinalSuffix(curRank);
-            const finalRank = s.score_payload.manual_rank || s._autoRank;
-            const rankClean = String(finalRank).toLowerCase().trim();
-            const topRanks = ['1', '1st', '2', '2nd', '3', '3rd'];
-
-            if (topRanks.includes(rankClean)) {
-                // Line 4: "(1st|2nd|3rd) Place" - "Tnnn" + patrol name if patrol games + ,entryname
-                let line4 = `${finalRank} Place - T${s.troop_number}`;
-                if (currentViewMode === 'patrol') {
-                    line4 += ` ${s.entity_name}`;
-                }
-
-                if (entryFields.length > 0) {
-                    const entryVals = entryFields.map(f => s.score_payload[f.id]).filter(v => v).join(", ");
-                    if (entryVals) line4 += `, ${entryVals}`;
-                }
-
-                gameWinners.push({
-                    gameName: formatGameTitle(game),
-                    line4: line4
-                });
-            }
-        });
-        if (gameWinners.length > 0) {
-            resultsByGroup.push({ title: game.id, winners: gameWinners });
+        if (!currentGroup || currentGroup.id !== w.gameId) {
+            currentGroup = {
+                id: w.gameId,
+                title: groupTitle,
+                winners: []
+            };
+            resultsByGroup.push(currentGroup);
         }
-    });
 
-    // 2. Overall Leaderboard
-    const entities = appData.entities.filter(e => e.type === currentViewMode);
-    entities.forEach(p => {
-        let total = 0;
-        games.forEach(g => {
-            if (pointsMap[p.id] && pointsMap[p.id][g.id]) {
-                total += pointsMap[p.id][g.id];
-            }
+        currentGroup.winners.push({
+            gameName: groupTitle,
+            line4: w.line4Text
         });
-        p._leaderboardTotal = total;
     });
-
-    const lbSorted = [...entities].sort((a,b) => b._leaderboardTotal - a._leaderboardTotal);
-    let curLBRank = 0;
-    let lastLBT = null;
-    const overallWinners = [];
-
-    lbSorted.forEach(p => {
-        if (p._leaderboardTotal !== lastLBT) {
-            curLBRank++;
-            lastLBT = p._leaderboardTotal;
-        }
-        p._autoOverallRank = getOrdinalSuffix(curLBRank);
-        const finalRank = p.manual_rank || p._autoOverallRank;
-        const rankClean = String(finalRank).toLowerCase().trim();
-        const topRanks = ['1', '1st', '2', '2nd', '3', '3rd'];
-
-        if (topRanks.includes(rankClean) || (p.manual_rank && p.manual_rank.length > 0)) {
-            let line4 = `${finalRank}${topRanks.includes(rankClean) ? " Place" : ""} - T${p.troop_number}`;
-            if (currentViewMode === 'patrol') {
-                line4 += ` ${p.name}`;
-            }
-
-            overallWinners.push({
-                gameName: "OVERALL LEADERBOARD",
-                line4: line4
-            });
-        }
-    });
-    if (overallWinners.length > 0) {
-        resultsByGroup.push({ title: 'OVERALL', winners: overallWinners });
-    }
 
     if (resultsByGroup.length === 0) {
         alert("No awards found to print.");
