@@ -656,6 +656,20 @@ function getPointsForRank(r) {
     return 50;
 }
 
+/**
+ * Calculates the total scores and ranks for all entities across all games.
+ *
+ * Ranking Logic:
+ * - Uses "Dense Ranking": Ties share the same rank, and the next rank is the immediate integer.
+ *   Example: If two entities tie for 1st, the next entity is 2nd (not 3rd).
+ *   Sequence: 1st, 1st, 2nd, 3rd...
+ *
+ * Precedence:
+ * - If a 'manual_rank' override exists in the score payload, it takes precedence over the calculated auto-rank.
+ * - Manual points overrides are also applied here for the final leaderboard calculations.
+ *
+ * @returns {Object} A map of { entity_id: { game_id: points } } for leaderboard aggregation.
+ */
 function calculateScoreContext() {
     // 1. Calculate totals for every score
     const enrichedScores = appData.scores.map(score => {

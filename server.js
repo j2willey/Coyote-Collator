@@ -102,6 +102,18 @@ app.use(express.static('public'));
 
 // --- API ROUTES ---
 
+/**
+ * GET /games.json
+ * Returns the full game configuration for the client app.
+ *
+ * Implements the "Sandwich Strategy" for constructing scoring forms:
+ * 1. Header (includes): Common fields loaded from external files (e.g., standard headers).
+ * 2. Meat (fields): Specific scoring fields defined in the game's JSON config.
+ * 3. Footer (appends): Common fields appended to the end (e.g., standard footers).
+ *
+ * This allows for modular configuration where common elements don't need to be repeated
+ * in every game file.
+ */
 // 1. GET /games.json (Configuration)
 app.get('/games.json', (req, res) => {
   try {

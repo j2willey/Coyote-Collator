@@ -829,6 +829,16 @@ function combineTime(id) {
     app.saveDraft();
 }
 
+/**
+ * Submits a score for the current station and entity.
+ *
+ * Offline-First Strategy:
+ * 1. The score packet is constructed and immediately saved to the LocalStorage queue via SyncManager.
+ * 2. The UI is updated immediately to reflect the submission (optimistic UI).
+ * 3. If the device is online, a background sync is attempted to push the queue to the server.
+ *
+ * This ensures that data is never lost if the network drops during submission.
+ */
 function submitScore(e) {
     e.preventDefault();
     if(!state.currentStation || !state.currentEntity) return;
