@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Designer Specific Styles */
+        body { background-color: #f4f6f9; }
+        .designer-container { margin-top: 20px; }
+        .editor-panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .nav-tabs .nav-link.active { font-weight: bold; border-top: 3px solid #0d6efd; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-campground"></i> Camporee Designer
+            </a>
+            <div class="d-flex">
+                <button class="btn btn-outline-light btn-sm me-2" onclick="designer.newCamporee()">
+                    <i class="fas fa-file"></i> New
+                </button>
+                <label class="btn btn-outline-warning btn-sm me-2 mb-0">
+                    <i class="fas fa-folder-open"></i> Import Zip
+                    <input type="file" id="fileInput" accept=".zip" hidden>
+                </label>
+                <button class="btn btn-success btn-sm" onclick="designer.exportCamporee()">
+                    <i class="fas fa-save"></i> Export Zip
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container designer-container">
+        <ul class="nav nav-tabs" id="designerTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="meta-tab" data-bs-toggle="tab" data-bs-target="#meta-pane" type="button">1. Camporee Info</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="games-tab" data-bs-toggle="tab" data-bs-target="#games-pane" type="button">2. Game Library</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor-pane" type="button" disabled>3. Game Editor</button>
+            </li>
+        </ul>
+
+        <div class="tab-content p-3 border border-top-0 bg-white">
+
+            <div class="tab-pane fade show active" id="meta-pane">
+                <h4>Event Details</h4>
+                <p class="text-muted">Define the global settings for this specific event.</p>
+                <form id="metaForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Camporee Title</label>
+                            <input type="text" class="form-control" id="metaTitle" placeholder="e.g. Coyote Creek 2026">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Theme</label>
+                            <input type="text" class="form-control" id="metaTheme" placeholder="e.g. Space Odyssey">
+                        </div>
+                    </div>
+                    </form>
+            </div>
+
+            <div class="tab-pane fade" id="games-pane">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Game Library</h4>
+                    <button class="btn btn-primary btn-sm" onclick="designer.addGame()"><i class="fas fa-plus"></i> Add Game</button>
+                </div>
+                <div class="list-group" id="gameList">
+                    <div class="text-center text-muted p-4">No games loaded. Click "Add Game" or Import a Zip.</div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="editor-pane">
+                <div id="editor-container">
+                    <p class="text-muted">Select a game from the library to edit it.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script src="/js/designer_logic.js"></script>
+</body>
+</html>

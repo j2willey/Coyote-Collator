@@ -11,3 +11,14 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
+
+  designer:
+    build: . # Uses the same Dockerfile as above
+    ports:
+      - "3001:3001" # Exposes the new port
+    volumes:
+      - .:/usr/src/app # Syncs code changes instantly
+      - /usr/src/app/node_modules
+    command: node designer_server.js # Runs the designer server instead
+    environment:
+      - NODE_ENV=development

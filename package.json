@@ -6,18 +6,12 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js",
-    "db:reset": "node scripts/reset_scores.js",
-    "db:nuke": "node scripts/nuke_db.js",
-    "db:inspect": "node scripts/inspect_scores.js",
-    "roster:inspect": "node scripts/inspect_roster.js",
-    "db:seed": "node scripts/seed_dummy_scores.js",
-    "import:roster": "node scripts/import_roster.js",
-    "demo:rebuild": "node scripts/demo/rebuild-demo.cjs",
-    "test": "playwright test"
+    "designer": "node designer_server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "better-sqlite3": "^9.0.0",
+    "ejs": "^4.0.1",
     "express": "^4.18.2",
     "xlsx": "^0.18.5"
   },
