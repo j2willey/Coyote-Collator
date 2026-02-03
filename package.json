@@ -13,6 +13,7 @@
     "roster:inspect": "node scripts/inspect_roster.js",
     "db:seed": "node scripts/seed_dummy_scores.js",
     "import:roster": "node scripts/import_roster.js",
+    "demo:rebuild": "node scripts/demo/rebuild-demo.cjs",
     "test": "playwright test"
   },
   "dependencies": {

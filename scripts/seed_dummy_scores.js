@@ -39,13 +39,15 @@ try {
     // START LOOP
     entities.forEach(entity => {
         const payload = JSON.stringify({
-            matches_used: Math.floor(Math.random() * 10) + 1,
-            boil_time: "05:30"
+            attempt_friction_fire: Math.floor(Math.random() * 5) + 1,
+            ignite_tinder: Math.floor(Math.random() * 5) + 1,
+            water_boils: Math.floor(Math.random() * 5) + 1,
+            judge_notes: "Automatically seeded demo score."
         });
 
         insertScore.run(
             randomUUID(),
-            'game_01_boil',
+            'p1',
             entity.id,
             payload,
             Date.now(),

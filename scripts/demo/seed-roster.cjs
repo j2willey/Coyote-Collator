@@ -26,8 +26,8 @@ async function run() {
     await page.goto('http://localhost:3000/admin.html');
     await sleep(waitTime);
 
-    // Switch to Registration View
-    await page.click('#nav-registration');
+    // Click the Registration button on the landing dashboard
+    await page.click('.dashboard-link-btn:has-text("Registration")');
     await sleep(waitTime);
 
     // Dialog handler for sequential prompts
@@ -55,8 +55,8 @@ async function run() {
             console.log(`  Adding Patrol ${patrol}...`);
             promptQueue.push(patrol);
             // Click the "+ Add Patrol" button inside the correct troop details
-            // The summary text contains "Troop [num]"
-            const troopRow = page.locator('.roster-group', { hasText: `Troop ${troop.num}` }).first();
+            // Summary text rendered as "T13" or "Troop [Name]"
+            const troopRow = page.locator('.roster-group', { hasText: troop.name }).first();
             await troopRow.locator('button:has-text("+ Add Patrol")').first().click();
             await sleep(waitTime);
         }

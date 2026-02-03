@@ -20,6 +20,16 @@ async function getContext(options = {}) {
     }
 
     const context = await browser.newContext(contextOptions);
+
+    // Bypass Judge Profile Modal by pre-setting localStorage
+    await context.addInitScript(() => {
+        localStorage.setItem('judge_info', JSON.stringify({
+            name: 'Demo Judge',
+            email: 'demo@coyote.org',
+            unit: 'Troop 1'
+        }));
+    });
+
     const page = await context.newPage();
 
     page.on('console', msg => console.log('PAGE LOG:', msg.text()));
@@ -77,7 +87,8 @@ async function getContext(options = {}) {
             await browser.close();
         },
         async startDemo() {
-            await page.goto('http://localhost:3000');
+            // Explicitly request index.html to avoid desktop redirect to admin.html
+            await page.goto('http://localhost:3000/index.html');
             if (isInteractive) {
                 console.log("Interactive mode active. Waiting 5 seconds...");
                 await new Promise(r => setTimeout(r, 5000));

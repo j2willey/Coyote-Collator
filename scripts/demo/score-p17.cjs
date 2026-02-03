@@ -6,102 +6,119 @@ const patrols = [
   {
     "name": "Skeleton Fishing",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.05694444444444444
     }
   },
   {
     "name": "Eaglez",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.05763888888888889
     }
   },
   {
     "name": "Inferno Sharks",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.059722222222222225
     }
   },
   {
     "name": "Ducks",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.05416666666666667
     }
   },
   {
     "name": "Dark Dragons",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.10069444444444445
     }
   },
   {
     "name": "Orcas",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.05694444444444444
     }
   },
   {
     "name": "Wolves",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.05486111111111111
     }
   },
   {
     "name": "Card Board Boxes",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.0625
     }
   },
   {
     "name": "Space Pirates",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": ":56"
     }
   },
   {
     "name": "Lakshay's Bros",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": ":50"
     }
   },
   {
     "name": "Minions",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.06319444444444444
     }
   },
   {
     "name": "Goofy Goobers",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.07013888888888889
     }
   },
   {
     "name": "Banana Ducks",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.04375
     }
   },
   {
     "name": "Krabbie Patties",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.044444444444444446
     }
   },
   {
     "name": "Ice Dragons",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.052083333333333336
     }
   },
   {
     "name": "Wolf Warriors",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": 0.08680555555555555
     }
   },
   {
     "name": "Falcons",
     "scores": {
+      "patrol_sprirt": 5,
       "timed": ":46"
     }
   }
@@ -114,13 +131,13 @@ async function run() {
     await startDemo();
     await sleep(waitTime);
 
+    // 1. Select Game (Only once, app returns to entity list after submit)
+    console.log(`Selecting Game ${gameId} (${gameName})...`);
+    await page.click(`button:has-text("${gameName}")`);
+    await sleep(waitTime);
+
     for (const p of patrols) {
         console.log(`--- Scoring Patrol: ${p.name} ---`);
-
-        // 1. Select Game
-        console.log(`Selecting Game ${gameId} (${gameName})...`);
-        await page.click(`button:has-text("${gameName}")`);
-        await sleep(waitTime);
 
         // 2. Select Patrol
         console.log(`Selecting Patrol ${p.name}...`);
@@ -172,8 +189,9 @@ async function run() {
         // 4. Submit
         console.log("Submitting...");
         const dialogHandler = async dialog => {
-            // Add tiny delay so it doesn't flash
-            await new Promise(r => setTimeout(r, 400));
+            console.log(`  DIALOG [${dialog.type()}]: "${dialog.message()}"`);
+            // Wait so the user can read the confirmation
+            await new Promise(r => setTimeout(r, waitTime));
             await dialog.accept();
         };
         page.on('dialog', dialogHandler);

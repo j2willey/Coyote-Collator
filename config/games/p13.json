@@ -7,8 +7,15 @@
   ],
   "fields": [
     {
-      "id": "patrol_sprirt",
-      "label": "Patrol Sprirt",
+      "id": "Teamwork",
+      "label": "Teamwork",
+      "type": "number",
+      "audience": "judge",
+      "kind": "points"
+    },
+    {
+      "id": "finds",
+      "label": "finds",
       "type": "number",
       "audience": "judge",
       "kind": "points"

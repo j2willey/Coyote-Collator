@@ -57,13 +57,13 @@ async function run() {
     await startDemo();
     await sleep(waitTime);
 
+    // 1. Select Game (Only once, app returns to entity list after submit)
+    console.log(`Selecting Game ${gameId} (${gameName})...`);
+    await page.click(`button:has-text("${gameName}")`);
+    await sleep(waitTime);
+
     for (const p of patrols) {
         console.log(`--- Scoring Patrol: ${p.name} ---`);
-
-        // 1. Select Game
-        console.log(`Selecting Game ${gameId} (${gameName})...`);
-        await page.click(`button:has-text("${gameName}")`);
-        await sleep(waitTime);
 
         // 2. Select Patrol
         console.log(`Selecting Patrol ${p.name}...`);
@@ -115,8 +115,9 @@ async function run() {
         // 4. Submit
         console.log("Submitting...");
         const dialogHandler = async dialog => {
-            // Add tiny delay so it doesn't flash
-            await new Promise(r => setTimeout(r, 400));
+            console.log(`  DIALOG [${dialog.type()}]: "${dialog.message()}"`);
+            // Wait so the user can read the confirmation
+            await new Promise(r => setTimeout(r, waitTime));
             await dialog.accept();
         };
         page.on('dialog', dialogHandler);

@@ -91,6 +91,7 @@ app.use(express.json());
 app.get('/', (req, res, next) => {
     const ua = req.headers['user-agent'] || '';
     const isMobile = /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua);
+
     if (!isMobile) {
         return res.redirect('/admin.html');
     }

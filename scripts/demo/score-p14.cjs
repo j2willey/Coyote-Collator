@@ -4,19 +4,127 @@ const gameId = "p14";
 const gameName = "Mermaid Tails";
 const patrols = [
   {
-    "name": "Max Possible",
+    "name": "Flaming Flamingoes",
     "scores": {
-      "unscoutlike": "(–100)",
-      "patrol_flag": 5,
-      "patrol_yell": 5,
       "patrol_sprirt": 5,
-      "knot_correctly_tied": 5,
-      "knot_rationale": 5,
+      "knot_correctly_tied": 78,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Atomic Duckies",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 98,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Raptors",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 93,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Dark Dragons",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 97,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Eggos",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 88,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Wolves",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 94,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Card Board Boxes",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 98,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Space Pirates",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 97,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "6'7ers",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 98,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Minions",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 88,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Fancy Frogs",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 89,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Banana Ducks",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 94,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Krabbie Patties",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 99,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Ice Dragons",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 94,
+      "time_points": 30
+    }
+  },
+  {
+    "name": "Fearless Firebirds",
+    "scores": {
+      "patrol_sprirt": 5,
+      "knot_correctly_tied": 99,
       "time_points": 30
     }
   }
 ];
-const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number"},{"id":"knot_correctly_tied","label":"Knot correctly tied","type":"number"},{"id":"knot_rationale","label":"Knot Rationale","type":"number"},{"id":"time_points","label":"Time Points","type":"timed"},{"id":"patrol_flag","label":"Patrol Flag?","sortOrder":1,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"patrol_yell","label":"Patrol Yell?","sortOrder":2,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"patrol_spirit","label":"Patrol Spirit","sortOrder":3,"type":"range","min":0,"max":5,"defaultValue":0},{"id":"unscoutlike","label":"Un-Scout-like Behavior (Penalty)","sortOrder":998,"type":"number","min":0,"max":100,"helperText":"Enter POSITIVE number to deduct points","defaultValue":0},{"id":"judge_notes","label":"Judge Notes / Comments","sortOrder":999,"type":"textarea","placeholder":"Optional notes on performance..."}];
+const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number","audience":"judge","kind":"points"},{"id":"knot_correctly_tied","label":"Knot correctly tied","type":"number","audience":"judge","kind":"points"},{"id":"knot_rationale","label":"Knot Rationale","type":"number","audience":"judge","kind":"points"},{"id":"time_points","label":"Time Points","type":"timed","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -24,13 +132,13 @@ async function run() {
     await startDemo();
     await sleep(waitTime);
 
+    // 1. Select Game (Only once, app returns to entity list after submit)
+    console.log(`Selecting Game ${gameId} (${gameName})...`);
+    await page.click(`button:has-text("${gameName}")`);
+    await sleep(waitTime);
+
     for (const p of patrols) {
         console.log(`--- Scoring Patrol: ${p.name} ---`);
-
-        // 1. Select Game
-        console.log(`Selecting Game ${gameId} (${gameName})...`);
-        await page.click(`button:has-text("${gameName}")`);
-        await sleep(waitTime);
 
         // 2. Select Patrol
         console.log(`Selecting Patrol ${p.name}...`);
@@ -42,6 +150,7 @@ async function run() {
         for (const [fieldId, val] of Object.entries(p.scores)) {
             const field = fieldConfigs.find(f => f.id === fieldId);
             if (!field) continue;
+            if (field.audience === 'admin') continue; // Judges can't see/fill admin fields
 
             if (field.type === 'timed') {
                 let mm = '00', ss = '00';
@@ -58,6 +167,20 @@ async function run() {
                 await page.fill(`#f_${fieldId}_ss`, ss);
             } else if (field.type === 'boolean') {
                 await page.fill(`#f_${fieldId}`, val === true || val === 'true' || val === 1 ? '1' : '0');
+            } else if (field.type === 'number') {
+                let cleanVal = String(val).trim();
+                let num = parseFloat(cleanVal);
+                if (isNaN(num)) {
+                    // Common convention: 'x' means 1 or 'checked'
+                    if (cleanVal.toLowerCase() === 'x') num = 1;
+                    else {
+                        // Try to extract first number found (e.g. "5 pts" -> 5)
+                        const match = cleanVal.match(/\d+/); // Double escaped for template string
+                        num = match ? parseInt(match[0]) : 0;
+                    }
+                }
+                // Also handle cases where a space or negative sign might be weird
+                await page.fill(`#f_${fieldId}`, String(Math.max(0, num)));
             } else {
                 await page.fill(`#f_${fieldId}`, String(val));
             }
@@ -66,7 +189,12 @@ async function run() {
 
         // 4. Submit
         console.log("Submitting...");
-        const dialogHandler = async dialog => { await dialog.accept(); };
+        const dialogHandler = async dialog => {
+            console.log(`  DIALOG [${dialog.type()}]: "${dialog.message()}"`);
+            // Wait so the user can read the confirmation
+            await new Promise(r => setTimeout(r, waitTime));
+            await dialog.accept();
+        };
         page.on('dialog', dialogHandler);
         await page.click('#btn-submit');
 

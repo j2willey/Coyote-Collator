@@ -15,7 +15,7 @@ const patrols = [
       "water_boils": 5,
       "extinguish_fire_reset": 2,
       "matches_used_count": "x",
-      "time_to_boil_or_n_a_mm_ss": 0.40625
+      "time_to_boil": 585
     }
   },
   {
@@ -55,7 +55,7 @@ const patrols = [
       "ignite_kindling": 5,
       "water_boils": 5,
       "extinguish_fire_reset": 5,
-      "time_to_boil_or_n_a_mm_ss": 0.24722222222222223
+      "time_to_boil": 356
     }
   },
   {
@@ -69,7 +69,7 @@ const patrols = [
       "ignite_kindling": 5,
       "water_boils": 5,
       "extinguish_fire_reset": 4,
-      "time_to_boil_or_n_a_mm_ss": 0.5625
+      "time_to_boil": 810
     }
   },
   {
@@ -82,7 +82,7 @@ const patrols = [
       "ignite_kindling": 5,
       "water_boils": 5,
       "extinguish_fire_reset": 5,
-      "time_to_boil_or_n_a_mm_ss": 0.41597222222222224
+      "time_to_boil": 599
     }
   },
   {
@@ -96,7 +96,7 @@ const patrols = [
       "ignite_kindling": 5,
       "water_boils": 5,
       "extinguish_fire_reset": 5,
-      "time_to_boil_or_n_a_mm_ss": 0.6034722222222222
+      "time_to_boil": 869
     }
   },
   {
@@ -110,7 +110,7 @@ const patrols = [
       "ignite_kindling": 5,
       "water_boils": 5,
       "extinguish_fire_reset": 5,
-      "time_to_boil_or_n_a_mm_ss": 0.5
+      "time_to_boil": 720
     }
   },
   {
@@ -125,7 +125,7 @@ const patrols = [
       "water_boils": 5,
       "extinguish_fire_reset": 5,
       "matches_used_count": "2x",
-      "time_to_boil_or_n_a_mm_ss": 0.2673611111111111
+      "time_to_boil": 385
     }
   },
   {
@@ -155,7 +155,7 @@ const patrols = [
     }
   }
 ];
-const fieldConfigs = [{"id":"attempt_friction_fire","label":"Attempt Friction Fire","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"charing_or_powder","label":"charing or powder","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"smoke","label":"smoke","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ember","label":"ember","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ignite_tinder","label":"Ignite tinder","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ignite_kindling","label":"ignite kindling","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"water_boils","label":"water boils","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"extinguish_fire_reset","label":"Extinguish fire & reset","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"matches_used_count","label":"Matches Used\n(Count)","type":"number","min":0,"max":20,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"time_to_boil_or_n_a_mm_ss","label":"Time to Boil or N.A.\n\nmm:ss","type":"timed","audience":"judge","kind":"points"},{"id":"judges_points_calc","label":"Calculated Points","type":"number","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"attempt_friction_fire","label":"Attempt Friction Fire","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"charing_or_powder","label":"charing or powder","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"smoke","label":"smoke","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ember","label":"ember","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ignite_tinder","label":"Ignite tinder","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"ignite_kindling","label":"ignite kindling","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"water_boils","label":"water boils","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"extinguish_fire_reset","label":"Extinguish fire & reset","type":"number","min":0,"max":5,"defaultValue":0,"audience":"judge","kind":"points"},{"id":"matches_used_count","label":"Matches Used\n(Count)","type":"number","min":0,"max":20,"defaultValue":0,"audience":"judge","kind":"metric"},{"id":"matches_score","label":"Matches points\n","type":"number","audience":"admin","kind":"points"},{"id":"time_to_boil","label":"Time to Boil or N.A.\n\nmm:ss","type":"timed","audience":"judge","kind":"metric"},{"id":"time_to_boil_score","label":"Boil time Bonus","type":"number","audience":"admin","kind":"points"},{"id":"judges_points_calc","label":"Calculated Points","type":"number","audience":"admin","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -163,13 +163,13 @@ async function run() {
     await startDemo();
     await sleep(waitTime);
 
+    // 1. Select Game (Only once, app returns to entity list after submit)
+    console.log(`Selecting Game ${gameId} (${gameName})...`);
+    await page.click(`button:has-text("${gameName}")`);
+    await sleep(waitTime);
+
     for (const p of patrols) {
         console.log(`--- Scoring Patrol: ${p.name} ---`);
-
-        // 1. Select Game
-        console.log(`Selecting Game ${gameId} (${gameName})...`);
-        await page.click(`button:has-text("${gameName}")`);
-        await sleep(waitTime);
 
         // 2. Select Patrol
         console.log(`Selecting Patrol ${p.name}...`);
@@ -221,8 +221,9 @@ async function run() {
         // 4. Submit
         console.log("Submitting...");
         const dialogHandler = async dialog => {
-            // Add tiny delay so it doesn't flash
-            await new Promise(r => setTimeout(r, 400));
+            console.log(`  DIALOG [${dialog.type()}]: "${dialog.message()}"`);
+            // Wait so the user can read the confirmation
+            await new Promise(r => setTimeout(r, waitTime));
             await dialog.accept();
         };
         page.on('dialog', dialogHandler);

@@ -14,7 +14,7 @@ const patrols = [
       "catch_eat": 5,
       "wash_and_clean_up": 8,
       "sum": 53,
-      "timed": 0.3298611111111111
+      "timed": 475
     }
   },
   {
@@ -28,7 +28,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 10,
       "sum": 53,
-      "timed": 0.2152777777777778
+      "timed": 310
     }
   },
   {
@@ -42,7 +42,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 9,
       "sum": 62,
-      "timed": 0.26944444444444443
+      "timed": 388
     }
   },
   {
@@ -54,7 +54,7 @@ const patrols = [
       "fully_cook_pancake": 4,
       "catch_eat": 5,
       "sum": 42,
-      "timed": 0.25
+      "timed": 360
     }
   },
   {
@@ -68,7 +68,7 @@ const patrols = [
       "catch_eat": 5,
       "wash_and_clean_up": 10,
       "sum": 59,
-      "timed": 0.24444444444444444
+      "timed": 352
     }
   },
   {
@@ -82,7 +82,7 @@ const patrols = [
       "catch_eat": 5,
       "wash_and_clean_up": 10,
       "sum": 54,
-      "timed": 0.15347222222222223
+      "timed": 221
     }
   },
   {
@@ -96,7 +96,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 10,
       "sum": 66,
-      "timed": 0.18472222222222223
+      "timed": 266
     }
   },
   {
@@ -110,7 +110,7 @@ const patrols = [
       "catch_eat": 2,
       "wash_and_clean_up": 8,
       "sum": 40,
-      "timed": 0.2013888888888889
+      "timed": 290
     }
   },
   {
@@ -124,7 +124,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 8,
       "sum": 61,
-      "timed": 0.3055555555555556
+      "timed": 440
     }
   },
   {
@@ -137,7 +137,7 @@ const patrols = [
       "fully_cook_pancake": 5,
       "catch_eat": 10,
       "sum": 60,
-      "timed": 0.27847222222222223
+      "timed": 401
     }
   },
   {
@@ -151,7 +151,7 @@ const patrols = [
       "catch_eat": 10,
       "wash_and_clean_up": 4,
       "sum": 59,
-      "timed": 0.3055555555555556
+      "timed": 440
     }
   },
   {
@@ -165,7 +165,7 @@ const patrols = [
       "catch_eat": 9,
       "wash_and_clean_up": 10,
       "sum": 66,
-      "timed": 0.15555555555555556
+      "timed": 224
     }
   },
   {
@@ -179,7 +179,7 @@ const patrols = [
       "catch_eat": 2,
       "wash_and_clean_up": 10,
       "sum": 47,
-      "timed": 0.29305555555555557
+      "timed": 422
     }
   }
 ];
@@ -191,13 +191,13 @@ async function run() {
     await startDemo();
     await sleep(waitTime);
 
+    // 1. Select Game (Only once, app returns to entity list after submit)
+    console.log(`Selecting Game ${gameId} (${gameName})...`);
+    await page.click(`button:has-text("${gameName}")`);
+    await sleep(waitTime);
+
     for (const p of patrols) {
         console.log(`--- Scoring Patrol: ${p.name} ---`);
-
-        // 1. Select Game
-        console.log(`Selecting Game ${gameId} (${gameName})...`);
-        await page.click(`button:has-text("${gameName}")`);
-        await sleep(waitTime);
 
         // 2. Select Patrol
         console.log(`Selecting Patrol ${p.name}...`);
@@ -249,8 +249,9 @@ async function run() {
         // 4. Submit
         console.log("Submitting...");
         const dialogHandler = async dialog => {
-            // Add tiny delay so it doesn't flash
-            await new Promise(r => setTimeout(r, 400));
+            console.log(`  DIALOG [${dialog.type()}]: "${dialog.message()}"`);
+            // Wait so the user can read the confirmation
+            await new Promise(r => setTimeout(r, waitTime));
             await dialog.accept();
         };
         page.on('dialog', dialogHandler);

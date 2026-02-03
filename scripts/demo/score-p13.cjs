@@ -4,13 +4,103 @@ const gameId = "p13";
 const gameName = "Underwater Treasure Hunt";
 const patrols = [
   {
+    "name": "Skeleton Fishing",
+    "scores": {
+      "finds": 51
+    }
+  },
+  {
+    "name": "Eaglez",
+    "scores": {
+      "finds": 40
+    }
+  },
+  {
+    "name": "Chunky Monkeys",
+    "scores": {
+      "finds": 56
+    }
+  },
+  {
+    "name": "Atomic Duckies",
+    "scores": {
+      "finds": 52
+    }
+  },
+  {
+    "name": "Ducks",
+    "scores": {
+      "finds": 57
+    }
+  },
+  {
+    "name": "Raptors",
+    "scores": {
+      "finds": 50
+    }
+  },
+  {
+    "name": "Dark Dragons",
+    "scores": {
+      "finds": 50
+    }
+  },
+  {
+    "name": "Orcas",
+    "scores": {
+      "finds": 57
+    }
+  },
+  {
+    "name": "Wolves",
+    "scores": {
+      "finds": 50
+    }
+  },
+  {
     "name": "Card Board Boxes",
     "scores": {
-      "patrol_sprirt": 4
+      "finds": 53
+    }
+  },
+  {
+    "name": "Lakshay's Bros",
+    "scores": {
+      "finds": 55
+    }
+  },
+  {
+    "name": "Minions",
+    "scores": {
+      "finds": 55
+    }
+  },
+  {
+    "name": "Fancy Frogs",
+    "scores": {
+      "finds": 43
+    }
+  },
+  {
+    "name": "Banana Ducks",
+    "scores": {
+      "finds": 54
+    }
+  },
+  {
+    "name": "Fearless Firebirds",
+    "scores": {
+      "finds": 34
+    }
+  },
+  {
+    "name": "Falcons",
+    "scores": {
+      "finds": 56
     }
   }
 ];
-const fieldConfigs = [{"id":"patrol_sprirt","label":"Patrol Sprirt","type":"number","audience":"judge","kind":"points"}];
+const fieldConfigs = [{"id":"Teamwork","label":"Teamwork","type":"number","audience":"judge","kind":"points"},{"id":"finds","label":"finds","type":"number","audience":"judge","kind":"points"}];
 
 async function run() {
     const { page, waitTime, sleep, finish, startDemo } = await getContext({ mobile: true });
@@ -18,13 +108,13 @@ async function run() {
     await startDemo();
     await sleep(waitTime);
 
+    // 1. Select Game (Only once, app returns to entity list after submit)
+    console.log(`Selecting Game ${gameId} (${gameName})...`);
+    await page.click(`button:has-text("${gameName}")`);
+    await sleep(waitTime);
+
     for (const p of patrols) {
         console.log(`--- Scoring Patrol: ${p.name} ---`);
-
-        // 1. Select Game
-        console.log(`Selecting Game ${gameId} (${gameName})...`);
-        await page.click(`button:has-text("${gameName}")`);
-        await sleep(waitTime);
 
         // 2. Select Patrol
         console.log(`Selecting Patrol ${p.name}...`);
@@ -76,8 +166,9 @@ async function run() {
         // 4. Submit
         console.log("Submitting...");
         const dialogHandler = async dialog => {
-            // Add tiny delay so it doesn't flash
-            await new Promise(r => setTimeout(r, 400));
+            console.log(`  DIALOG [${dialog.type()}]: "${dialog.message()}"`);
+            // Wait so the user can read the confirmation
+            await new Promise(r => setTimeout(r, waitTime));
             await dialog.accept();
         };
         page.on('dialog', dialogHandler);

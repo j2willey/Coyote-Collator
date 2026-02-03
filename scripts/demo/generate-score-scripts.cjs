@@ -19,6 +19,13 @@ if (!fs.existsSync(excelPath)) {
 const workbook = XLSX.readFile(excelPath);
 const files = fs.readdirSync(gamesDir);
 
+// Clean up old scripts to avoid stale data
+fs.readdirSync(outputDir).forEach(f => {
+    if (f.startsWith('score-p') && f.endsWith('.cjs')) {
+        fs.unlinkSync(path.join(outputDir, f));
+    }
+});
+
 files.forEach(file => {
     if (!file.startsWith('p') || !file.endsWith('.json')) return;
 
@@ -89,9 +96,15 @@ files.forEach(file => {
         });
 
         if (hasAnyScore) {
-            const normPName = normalize(String(name));
-            if (!['maxpossible', 'score', 'total', 'place'].includes(normPName)) {
-                patrolsToScore.push({ name: String(name).trim(), scores });
+            const rawName = String(name).trim();
+            const normPName = normalize(rawName);
+            // Exclude common header/footer rows in Excel
+            const isExcluded = [
+                'maxpossible', 'score', 'total', 'place', 'points', 'possible', 'max'
+            ].some(term => normPName.includes(term));
+
+            if (!isExcluded && rawName.length > 0) {
+                patrolsToScore.push({ name: rawName, scores });
             }
         }
     }
@@ -111,13 +124,13 @@ async function run() {
     await startDemo();
     await sleep(waitTime);
 
+    // 1. Select Game (Only once, app returns to entity list after submit)
+    console.log(\`Selecting Game \${gameId} (\${gameName})...\`);
+    await page.click(\`button:has-text("\${gameName}")\`);
+    await sleep(waitTime);
+
     for (const p of patrols) {
         console.log(\`--- Scoring Patrol: \${p.name} ---\`);
-
-        // 1. Select Game
-        console.log(\`Selecting Game \${gameId} (\${gameName})...\`);
-        await page.click(\`button:has-text("\${gameName}")\`);
-        await sleep(waitTime);
 
         // 2. Select Patrol
         console.log(\`Selecting Patrol \${p.name}...\`);
@@ -169,7 +182,7 @@ async function run() {
         // 4. Submit
         console.log("Submitting...");
         const dialogHandler = async dialog => {
-            console.log(`  DIALOG [${dialog.type()}]: "${dialog.message()}"`);
+            console.log(\`  DIALOG [\${dialog.type()}]: "\${dialog.message()}"\`);
             // Wait so the user can read the confirmation
             await new Promise(r => setTimeout(r, waitTime));
             await dialog.accept();
