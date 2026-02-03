@@ -84,12 +84,18 @@ function setupNavigation() {
     const viewModeSelect = document.getElementById('view-mode-select');
     const clearScoresBtn = document.getElementById('btn-clear-scores');
     const resetDbBtn = document.getElementById('btn-reset-db');
+    const exportRawBtn = document.getElementById('btn-export-raw');
 
     // Branding click goes back to dashboard
     const brand = document.querySelector('header h1');
     if (brand) {
         brand.style.cursor = 'pointer';
         brand.onclick = () => switchView('dashboard');
+    }
+
+    if (exportRawBtn) {
+        // Raw Export: Database Dump (All Scores) - distinct from Awards CSV
+        exportRawBtn.onclick = () => window.location.href = '/api/export';
     }
 
     if (clearScoresBtn) {
@@ -142,6 +148,7 @@ function setupNavigation() {
 
     const exportAwardsBtn = document.getElementById('btn-export-awards');
     if (exportAwardsBtn) {
+        // Awards CSV: Winners List (Processed Client-Side)
         exportAwardsBtn.onclick = () => exportAwardsCSV();
     }
 
