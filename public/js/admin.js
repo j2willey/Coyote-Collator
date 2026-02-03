@@ -15,6 +15,7 @@ let matrixTranspose = false;
 let detailSort = { col: '_finalRank', dir: 'asc' };
 let activeGameId = null;
 let finalMode = false;
+let autoRefreshInterval = null;
 
 // Initialization
 document.addEventListener('DOMContentLoaded', async () => {
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-async function loadData() {
+async function loadData(silent = false) {
     try {
         const ts = Date.now();
         // Fetch Games Config & Entities
@@ -70,11 +71,14 @@ async function loadData() {
         appData.stats = dataResult.stats || {};
         appData.gameStatuses = dataResult.game_status || {};
 
-        console.log('Loaded Data:', appData);
+        if (!silent) console.log('Loaded Data:', appData);
+
+        // If we are auto-refreshing, we need to re-render the current view to show changes
+        if (silent) refreshCurrentView();
 
     } catch (err) {
         console.error('Failed to load data', err);
-        alert('Error loading dashboard data');
+        if (!silent) alert('Error loading dashboard data');
     }
 }
 
@@ -85,6 +89,7 @@ function setupNavigation() {
     const clearScoresBtn = document.getElementById('btn-clear-scores');
     const resetDbBtn = document.getElementById('btn-reset-db');
     const exportRawBtn = document.getElementById('btn-export-raw');
+    const autoRefreshSwitch = document.getElementById('auto-refresh-switch');
 
     // Branding click goes back to dashboard
     const brand = document.querySelector('header h1');
@@ -187,6 +192,19 @@ function setupNavigation() {
             const printBtn = document.getElementById('btn-print-preview');
             if (previewContainer) previewContainer.classList.add('hidden');
             if (printBtn) printBtn.classList.add('hidden');
+        });
+    }
+
+    if (autoRefreshSwitch) {
+        autoRefreshSwitch.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                // Start Polling (15s)
+                loadData(true); // Immediate fetch
+                autoRefreshInterval = setInterval(() => loadData(true), 15000);
+            } else {
+                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
         });
     }
 }
@@ -1287,7 +1305,8 @@ function renderMatrixNormal(table, games, patrols) {
     headerRow.appendChild(createTh(currentViewMode === 'patrol' ? 'Patrol' : 'Troop Name'));
 
     games.forEach(g => {
-        const th = createTh(formatGameTitle(g));
+        // Shorten "Game n." to "G. n." to save space
+        const th = createTh(formatGameTitle(g).replace(/^Game\s+(\d+)/, 'G.$1'));
         th.className = 'rotate-header';
         th.title = g.name;
         headerRow.appendChild(th);
@@ -1808,7 +1827,21 @@ function generateQRCode() {
             alert('Please enter a URL');
             return;
         }
+
+        // Append Judge Params if present
+        const jName = document.getElementById('qr-judge-name').value.trim();
+        const jEmail = document.getElementById('qr-judge-email').value.trim();
+        const jUnit = document.getElementById('qr-judge-unit').value.trim();
+
+        if (jEmail) {
+            const urlObj = new URL(url);
+            urlObj.searchParams.set('judge_email', jEmail);
+            if (jName) urlObj.searchParams.set('judge_name', jName);
+            if (jUnit) urlObj.searchParams.set('judge_unit', jUnit);
+            text = urlObj.toString();
+        } else {
         text = url;
+        }
     }
 
     if (typeof QRCode === 'undefined') {

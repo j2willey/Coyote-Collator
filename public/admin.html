@@ -29,6 +29,10 @@
                     <option value="exhibition">Exhibition Games</option>
                 </select>
             </div>
+            <div class="form-check form-switch text-white" style="display:flex; align-items:center; gap:5px;" title="Auto-refresh data every 15s">
+                <input class="form-check-input" type="checkbox" id="auto-refresh-switch" style="cursor:pointer;">
+                <label class="form-check-label" for="auto-refresh-switch" style="cursor:pointer; font-weight:bold;">Live</label>
+            </div>
         </div>
         <nav class="hidden">
             <button id="nav-dashboard">Dashboard</button>
@@ -248,6 +252,20 @@
                         <div class="mb-3">
                             <label class="form-label">Instructions (Optional)</label>
                             <textarea id="qr-url-instructions" class="form-control" rows="2" placeholder="Scan to open the scoring application."></textarea>
+                        </div>
+
+                        <hr>
+                        <h5 class="mb-3">Pre-fill Judge Profile (Optional)</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <input type="text" id="qr-judge-name" class="form-control" placeholder="Judge Name">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <input type="email" id="qr-judge-email" class="form-control" placeholder="Judge Email">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <input type="text" id="qr-judge-unit" class="form-control" placeholder="Unit (e.g. Troop 100)">
+                            </div>
                         </div>
                     </div>
 

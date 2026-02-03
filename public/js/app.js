@@ -41,6 +41,19 @@ const views = {
 // --- Initialization ---
 
 async function init() {
+    // 1. Quick Config via URL (QR Code Support)
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('judge_email')) {
+        const j = {
+            name: params.get('judge_name') || '',
+            email: params.get('judge_email') || '',
+            unit: params.get('judge_unit') || ''
+        };
+        localStorage.setItem('judge_info', JSON.stringify(j));
+        // Clean URL so refreshing doesn't reset if they edit it manually later
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     updateOnlineStatus();
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
