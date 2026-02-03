@@ -21,9 +21,6 @@
             <h1>Coyote Admin<span id="header-subtitle"></span></h1>
         </div>
         <div id="header-actions" class="hidden" style="display:flex; align-items:center; gap:10px; margin-left:auto; margin-right:20px;">
-            <button id="btn-export-raw" class="btn btn-warning" style="padding:5px 10px; font-size:0.8rem; margin-right:10px;">💾 Backup Raw Data</button>
-            <button id="btn-clear-scores" style="background:none; border:1px solid #f39c12; color:#f39c12; padding:5px 10px; cursor:pointer; border-radius:4px; margin-right:10px; font-size:0.8rem;">⚠ Clear Scores</button>
-            <button id="btn-reset-db" style="background:none; border:1px solid #e74c3c; color:#e74c3c; padding:5px 10px; cursor:pointer; border-radius:4px; margin-right:15px; font-size:0.8rem;">☢ Reset DB</button>
             <div id="mode-filter-container" style="display:flex; align-items:center; gap:10px;">
                 <select id="view-mode-select" style="padding:5px; border-radius:4px; font-weight:bold;">
                     <option value="patrol">Patrol Games</option>
@@ -34,7 +31,6 @@
         </div>
         <nav class="hidden">
             <button id="nav-dashboard">Dashboard</button>
-            <button id="nav-judges">Judges</button>
         </nav>
     </header>
 
@@ -59,6 +55,10 @@
                     <button class="dashboard-link-btn" onclick="switchView('judges', true)">
                         <span style="font-size: 3rem;">⚖️</span>
                         <br>Judges
+                    </button>
+                    <button class="dashboard-link-btn" onclick="switchView('debug', true)">
+                        <span style="font-size: 3rem;">🛠️</span>
+                        <br>System
                     </button>
                 </div>
             </div>
@@ -156,6 +156,37 @@
                 <button id="btn-copy-emails" class="btn btn-secondary">📋 Copy All Emails</button>
             </div>
             <div id="judges-list" class="table-container"></div>
+        </section>
+
+        <!-- View 7: System & Debug -->
+        <section id="view-debug" class="hidden">
+            <div style="max-width: 800px; margin: 40px auto; text-align: center;">
+                <h2>System & Debug Tools</h2>
+                <div class="alert alert-warning" style="margin: 20px 0;">
+                    <strong>Warning:</strong> These actions are intended for development and debugging.
+                    Some actions are destructive and cannot be undone.
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
+                    <div class="card p-4" style="width: 100%; max-width: 500px;">
+                        <h4>Data Backup</h4>
+                        <p class="text-muted">Download a raw dump of the entire database (Scores + Entities).</p>
+                        <button id="btn-export-raw" class="btn btn-primary">💾 Backup Raw Data</button>
+                    </div>
+
+                    <div class="card p-4" style="width: 100%; max-width: 500px; border-color: #f39c12;">
+                        <h4 class="text-warning">Clear Scores</h4>
+                        <p class="text-muted">Delete all scores and judge data. Rosters (Troops/Patrols) are preserved.</p>
+                        <button id="btn-clear-scores" class="btn btn-warning">⚠ Clear Scores</button>
+                    </div>
+
+                    <div class="card p-4" style="width: 100%; max-width: 500px; border-color: #e74c3c;">
+                        <h4 class="text-danger">Factory Reset</h4>
+                        <p class="text-muted">Delete EVERYTHING: Scores, Judges, Troops, and Patrols.</p>
+                        <button id="btn-reset-db" class="btn btn-danger">☢ Reset DB</button>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 </body>

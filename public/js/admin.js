@@ -81,7 +81,6 @@ async function loadData() {
 function setupNavigation() {
     const navDashboard = document.getElementById('nav-dashboard');
     const transposeBtn = document.getElementById('btn-transpose');
-    const navJudges = document.getElementById('nav-judges');
     const viewModeSelect = document.getElementById('view-mode-select');
     const clearScoresBtn = document.getElementById('btn-clear-scores');
     const resetDbBtn = document.getElementById('btn-reset-db');
@@ -145,10 +144,6 @@ function setupNavigation() {
 
     if (navDashboard) {
         navDashboard.addEventListener('click', () => switchView('dashboard'));
-    }
-
-    if (navJudges) {
-        navJudges.addEventListener('click', () => switchView('judges'));
     }
 
     const copyEmailsBtn = document.getElementById('btn-copy-emails');
@@ -289,6 +284,9 @@ function switchView(viewName, pushToHistory = true) {
         document.getElementById('view-judges').classList.remove('hidden');
         setSubtitle('Judges Directory');
         renderJudgesView();
+    } else if (viewName === 'debug') {
+        document.getElementById('view-debug').classList.remove('hidden');
+        setSubtitle('System Tools');
     }
 }
 window.switchView = switchView;
