@@ -287,6 +287,13 @@ function switchView(viewName, pushToHistory = true) {
     } else if (viewName === 'debug') {
         document.getElementById('view-debug').classList.remove('hidden');
         setSubtitle('System Tools');
+    } else if (viewName === 'qrcode') {
+        document.getElementById('view-qrcode').classList.remove('hidden');
+        setSubtitle('QR Generator');
+        const urlInput = document.getElementById('qr-url');
+        if (urlInput && !urlInput.value) {
+            urlInput.value = window.location.origin;
+        }
     }
 }
 window.switchView = switchView;
@@ -1746,6 +1753,115 @@ async function updateScoreField(uuid, fieldId, value) {
         alert('Failed to save change. Please refresh.');
     }
 }
+
+// --- QR Code Generator ---
+let qrMode = 'wifi';
+
+function setQrMode(mode) {
+    qrMode = mode;
+    const wifiTab = document.getElementById('tab-wifi');
+    const urlTab = document.getElementById('tab-url');
+    const wifiForm = document.getElementById('qr-wifi-form');
+    const urlForm = document.getElementById('qr-url-form');
+
+    if (mode === 'wifi') {
+        wifiTab.classList.add('active');
+        urlTab.classList.remove('active');
+        wifiForm.classList.remove('hidden');
+        urlForm.classList.add('hidden');
+    } else {
+        wifiTab.classList.remove('active');
+        urlTab.classList.add('active');
+        wifiForm.classList.add('hidden');
+        urlForm.classList.remove('hidden');
+    }
+    // Clear previous QR
+    document.getElementById('qr-output').innerHTML = '';
+}
+
+function generateQRCode() {
+    const container = document.getElementById('qr-output');
+    container.innerHTML = '';
+
+    let text = '';
+    let title = '';
+    let instructions = '';
+
+    if (qrMode === 'wifi') {
+        const ssid = document.getElementById('qr-ssid').value.trim();
+        const password = document.getElementById('qr-password').value.trim();
+        const encryption = document.getElementById('qr-encryption').value;
+        title = document.getElementById('qr-wifi-title').value.trim();
+        instructions = document.getElementById('qr-wifi-instructions').value.trim();
+
+        if (!ssid) {
+            alert('Please enter an SSID');
+            return;
+        }
+        // WIFI:T:WPA;S:mynetwork;P:mypass;;
+        text = `WIFI:T:${encryption};S:${ssid};P:${password};;`;
+    } else {
+        const url = document.getElementById('qr-url').value.trim();
+        title = document.getElementById('qr-url-title').value.trim();
+        instructions = document.getElementById('qr-url-instructions').value.trim();
+        if (!url) {
+            alert('Please enter a URL');
+            return;
+        }
+        text = url;
+    }
+
+    if (typeof QRCode === 'undefined') {
+        container.innerHTML = '<div class="alert alert-danger">QR Library not loaded. Please ensure you have internet access or have downloaded qrcode.min.js to public/js/.</div>';
+        return;
+    }
+
+    // Create a printable wrapper
+    const wrapper = document.createElement('div');
+    wrapper.style.textAlign = 'center';
+    wrapper.style.padding = '20px';
+    wrapper.style.border = '1px solid #ccc';
+    wrapper.style.borderRadius = '8px';
+    wrapper.style.backgroundColor = 'white';
+    wrapper.style.display = 'inline-block';
+
+    if (title) {
+        const h2 = document.createElement('h2');
+        h2.innerText = title;
+        h2.style.marginBottom = '20px';
+        wrapper.appendChild(h2);
+    }
+
+    const qrDiv = document.createElement('div');
+    qrDiv.style.display = 'inline-block';
+    wrapper.appendChild(qrDiv);
+
+    if (instructions) {
+        const p = document.createElement('p');
+        p.innerText = instructions;
+        p.style.marginTop = '20px';
+        p.style.whiteSpace = 'pre-wrap';
+        p.style.fontSize = '1.1rem';
+        wrapper.appendChild(p);
+    }
+
+    container.appendChild(wrapper);
+
+    new QRCode(qrDiv, {
+        text: text,
+        width: 256,
+        height: 256
+    });
+
+    const printBtn = document.createElement('button');
+    printBtn.className = 'btn btn-secondary mt-3 no-print';
+    printBtn.innerText = '🖨️ Print QR Code';
+    printBtn.onclick = () => window.print();
+    container.appendChild(printBtn);
+}
+
+window.setQrMode = setQrMode;
+window.generateQRCode = generateQRCode;
 
 async function renderJudgesView() {
     const container = document.getElementById('judges-list');

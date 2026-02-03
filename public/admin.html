@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/spreadsheet.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="js/admin.js" defer></script>
 </head>
 <body>
@@ -59,6 +60,10 @@
                     <button class="dashboard-link-btn" onclick="switchView('debug', true)">
                         <span style="font-size: 3rem;">🛠️</span>
                         <br>System
+                    </button>
+                    <button class="dashboard-link-btn" onclick="switchView('qrcode', true)">
+                        <span style="font-size: 3rem;">📱</span>
+                        <br>QR Gen
                     </button>
                 </div>
             </div>
@@ -186,6 +191,72 @@
                         <button id="btn-reset-db" class="btn btn-danger">☢ Reset DB</button>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- View 8: QR Code Generator -->
+        <section id="view-qrcode" class="hidden">
+            <div style="max-width: 800px; margin: 40px auto;">
+                <div class="card p-4 no-print">
+                    <h2 class="mb-4 text-center">QR Code Generator</h2>
+
+                    <ul class="nav nav-tabs mb-3" id="qr-tabs">
+                        <li class="nav-item">
+                            <button class="nav-link active" id="tab-wifi" onclick="setQrMode('wifi')">Wi-Fi Network</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="tab-url" onclick="setQrMode('url')">Server URL</button>
+                        </li>
+                    </ul>
+
+                    <div id="qr-wifi-form">
+                        <div class="mb-3">
+                            <label class="form-label">Network Name (SSID)</label>
+                            <input type="text" id="qr-ssid" class="form-control" placeholder="MyCamporeeWiFi">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="text" id="qr-password" class="form-control" placeholder="SecretPassword">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Encryption</label>
+                            <select id="qr-encryption" class="form-select">
+                                <option value="WPA">WPA/WPA2</option>
+                                <option value="WEP">WEP</option>
+                                <option value="nopass">None</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Title (Optional)</label>
+                            <input type="text" id="qr-wifi-title" class="form-control" placeholder="Connect to Wi-Fi">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Instructions (Optional)</label>
+                            <textarea id="qr-wifi-instructions" class="form-control" rows="2" placeholder="Scan this code to join the network automatically."></textarea>
+                        </div>
+                    </div>
+
+                    <div id="qr-url-form" class="hidden">
+                        <div class="mb-3">
+                            <label class="form-label">Website URL</label>
+                            <input type="text" id="qr-url" class="form-control" placeholder="http://192.168.1.100:3000">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Title (Optional)</label>
+                            <input type="text" id="qr-url-title" class="form-control" placeholder="Open Scoring App">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Instructions (Optional)</label>
+                            <textarea id="qr-url-instructions" class="form-control" rows="2" placeholder="Scan to open the scoring application."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary btn-lg" onclick="generateQRCode()">Generate QR Code</button>
+                    </div>
+                </div>
+
+                <div id="qr-output" class="mt-5 d-flex justify-content-center flex-column align-items-center"></div>
             </div>
         </section>
     </main>
