@@ -87,8 +87,8 @@ async function getContext(options = {}) {
             await browser.close();
         },
         async startDemo() {
-            // Explicitly request index.html to avoid desktop redirect to admin.html
-            await page.goto('http://localhost:3000/index.html');
+            // Explicitly request judge.html for scoring flow
+            await page.goto('http://localhost:3000/judge.html');
             if (isInteractive) {
                 console.log("Interactive mode active. Waiting 5 seconds...");
                 await new Promise(r => setTimeout(r, 5000));

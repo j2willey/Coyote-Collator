@@ -197,7 +197,11 @@ async function runImport() {
         };
 
         if (game.includes) finalFields = finalFields.concat(resolveFields(game.includes, path.join(GAMES_DIR, `${game.id}.json`)));
-        finalFields = finalFields.concat(game.fields || []);
+
+        // Handle Schema Changes: Check game.fields (legacy) OR game.scoring.components (new)
+        // Also ensure we handle cases where game.scoring exists but components is undefined
+        finalFields = finalFields.concat(game.fields || (game.scoring && game.scoring.components) || []);
+
         if (game.appends) finalFields = finalFields.concat(resolveFields(game.appends, path.join(GAMES_DIR, `${game.id}.json`)));
 
         const allFields = finalFields;

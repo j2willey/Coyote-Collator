@@ -128,13 +128,13 @@ function loadCamporeeData() {
                             gameDef.fields = gameDef.scoring.components.map(comp => ({
                                 id: comp.id,
                                 label: comp.label,
-                                type: comp.type,
+                                type: comp.type === 'stopwatch' ? 'timed' : comp.type,
                                 kind: comp.kind,
                                 weight: comp.weight,
                                 audience: comp.audience,
                                 ...comp.config // Spread min/max/placeholder into root
                             }));
-                        } else {
+                        } else if (!gameDef.fields) {
                             gameDef.fields = [];
                         }
 

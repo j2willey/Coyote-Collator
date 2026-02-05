@@ -71,7 +71,12 @@ files.forEach(file => {
     if (patrolNameIdx === -1 && patrolIdIdx === -1) return;
 
     // Map columns to fields
-    const allFields = [...(game.fields || []), ...commonScoring];
+    // Handle Schema Changes: Check game.fields (legacy) OR game.scoring.components (new)
+    // Also ensure we handle cases where game.scoring exists but components is undefined
+    const gameFields = game.fields || (game.scoring && game.scoring.components) || [];
+
+    const allFields = [...gameFields, ...commonScoring];
+
     const fieldMap = [];
     headers.forEach((h, idx) => {
         if (!h) return;
