@@ -70,16 +70,39 @@ async function loadData(silent = false) {
         appData.scores = dataResult.scores || [];
         appData.stats = dataResult.stats || {};
         appData.gameStatuses = dataResult.game_status || {};
+        appData.metadata = dataResult.metadata || {};
 
         if (!silent) console.log('Loaded Data:', appData);
 
         // If we are auto-refreshing, we need to re-render the current view to show changes
         if (silent) refreshCurrentView();
+        updateDashboardHeader();
 
     } catch (err) {
         console.error('Failed to load data', err);
         if (!silent) alert('Error loading dashboard data');
     }
+}
+
+function updateDashboardHeader() {
+    const meta = appData.metadata;
+    if (!meta) return;
+
+    // 1. Update the main H1 Brand
+    const brand = document.querySelector('header h1'); // or element with class .navbar-brand
+    if (brand) {
+        // Set the visible title
+        brand.innerText = meta.title || 'Coyote Collator';
+
+        // Set the debug UUID tooltip
+        if (meta.camporeeId) {
+            brand.title = `UUID: ${meta.camporeeId}\nTheme: ${meta.theme}`;
+            brand.style.cursor = 'help'; // Visual cue that hover does something
+        }
+    }
+
+    // 2. Update Document Title (Browser Tab)
+    document.title = meta.title ? `${meta.title} - Admin` : 'Coyote Collator';
 }
 
 function setupNavigation() {

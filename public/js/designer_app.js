@@ -71,6 +71,13 @@ const designer = {
             this.data.meta.camporeeId = this.generateUUID();
         }
 
+        const titleInput = document.getElementById('metaTitle');
+        if (titleInput) {
+            titleInput.title = `Camporee UUID: ${this.data.meta.camporeeId}`;
+            // Optional: Log it so you can see it in console immediately
+            console.log("Current Camporee UUID:", this.data.meta.camporeeId);
+        }
+
         this.renderServerControls();
         this.renderGameLists();
     },

@@ -397,7 +397,8 @@ app.get('/api/admin/all-data', (req, res) => {
     const statusMap = {};
     const statuses = db.prepare('SELECT * FROM game_status').all();
     for (const s of statuses) { statusMap[s.game_id] = s.status; }
-    res.json({ scores: parsed, stats, game_status: statusMap });
+    const meta = getActiveMeta();
+    res.json({ scores: parsed, stats, game_status: statusMap, metadata: meta });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
