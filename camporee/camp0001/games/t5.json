@@ -1,0 +1,55 @@
+{
+  "id": "t5",
+  "type": "troop",
+  "schemaVersion": "2.7",
+  "content": {
+    "title": "Cooking Mystery item",
+    "story": "",
+    "instructions": ""
+  },
+  "scoring": {
+    "method": "points_desc",
+    "components": [
+      {
+        "id": "dish",
+        "label": "Dish",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "cooking_techniques",
+        "label": "Cooking Techniques",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "presentation",
+        "label": "Presentation",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "flavor_taste",
+        "label": "Flavor/Taste",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      }
+    ]
+  }
+}

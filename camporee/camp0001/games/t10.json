@@ -1,0 +1,25 @@
+{
+  "id": "t10",
+  "type": "troop",
+  "schemaVersion": "2.7",
+  "content": {
+    "title": "LandSkis",
+    "story": "",
+    "instructions": ""
+  },
+  "scoring": {
+    "method": "points_desc",
+    "components": [
+      {
+        "id": "points",
+        "label": "Points",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      }
+    ]
+  }
+}

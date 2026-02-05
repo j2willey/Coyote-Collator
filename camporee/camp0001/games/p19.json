@@ -1,0 +1,233 @@
+{
+  "id": "p19",
+  "type": "patrol",
+  "schemaVersion": "2.7",
+  "content": {
+    "title": "Sahara Oasis, Savanna  Irrigation",
+    "story": "",
+    "instructions": ""
+  },
+  "scoring": {
+    "method": "points_desc",
+    "components": [
+      {
+        "id": "patrol_flag",
+        "label": "Patrol Flag?",
+        "audience": "judge",
+        "sortOrder": 1,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "patrol_yell",
+        "label": "Patrol Yell?",
+        "audience": "judge",
+        "sortOrder": 2,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "patrol_spirit",
+        "label": "Patrol Spirit",
+        "audience": "judge",
+        "sortOrder": 3,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "rig_bucket_w_knots",
+        "label": "Rig bucket w/ knots",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "submerge_bucket",
+        "label": "submerge bucket",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "stop_contain_leaks",
+        "label": "stop/contain leaks",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "reaching_into_well_1_pt_per_violation",
+        "label": "reaching into well\n(–1 pt per violation)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "bucket_over_head",
+        "label": "bucket over head",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "bucket_without_hands",
+        "label": "bucket without  hands",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "stop_contain_leaks",
+        "label": "stop/contain leaks",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "2_3_before_moving",
+        "label": "2/3  before moving",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "stop_or_contain_leaks",
+        "label": "stop or contain leaks",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "1_2_before_moving",
+        "label": "1/2 before moving",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "stop_contain_leaks",
+        "label": "stop/contain leaks",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "siphon_at_least_3cups",
+        "label": "siphon at least 3cups",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "illegal_dipping_1_pt_violation",
+        "label": "Illegal dipping \n(–1 pt /violation)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "other_penalties",
+        "label": "Other Penalties",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "h2o_cups_transferred",
+        "label": "H2O Cups transferred",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "unscoutlike",
+        "label": "Un-Scout-like Behavior (Penalty)",
+        "audience": "judge",
+        "sortOrder": 998,
+        "config": {
+          "min": 0,
+          "max": 100,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "penalty",
+        "weight": -1
+      },
+      {
+        "id": "judge_notes",
+        "label": "Judge Notes / Comments",
+        "audience": "judge",
+        "sortOrder": 999,
+        "config": {
+          "placeholder": "Optional notes on performance..."
+        },
+        "type": "textarea",
+        "kind": "metric",
+        "weight": 0
+      }
+    ]
+  }
+}

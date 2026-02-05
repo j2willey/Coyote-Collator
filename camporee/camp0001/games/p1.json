@@ -1,0 +1,249 @@
+{
+  "id": "p1",
+  "type": "patrol",
+  "schemaVersion": "2.7",
+  "content": {
+    "title": "Boiling the Ocean",
+    "story": "",
+    "instructions": ""
+  },
+  "scoring": {
+    "method": "points_desc",
+    "components": [
+      {
+        "id": "patrol_flag",
+        "label": "Patrol Flag?",
+        "audience": "judge",
+        "sortOrder": 1,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "patrol_yell",
+        "label": "Patrol Yell?",
+        "audience": "judge",
+        "sortOrder": 2,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "patrol_spirit",
+        "label": "Patrol Spirit",
+        "audience": "judge",
+        "sortOrder": 3,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "attempt_friction_fire",
+        "label": "Attempt Friction Fire",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "charing_or_powder",
+        "label": "charing or powder",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "smoke",
+        "label": "smoke",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "ember",
+        "label": "ember",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "ignite_tinder",
+        "label": "Ignite tinder",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "ignite_kindling",
+        "label": "ignite kindling",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "water_boils",
+        "label": "water boils",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "extinguish_fire_reset",
+        "label": "Extinguish fire & reset",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "matches_used_count",
+        "label": "Matches Used\n(Count)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {
+          "min": 0,
+          "max": 20,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "metric",
+        "weight": 0
+      },
+      {
+        "id": "matches_score",
+        "label": "Matches points\n",
+        "audience": "admin",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "time_to_boil",
+        "label": "Time to Boil or N.A.\n\nmm:ss",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "stopwatch",
+        "kind": "metric",
+        "weight": 0
+      },
+      {
+        "id": "time_to_boil_score",
+        "label": "Boil time Bonus",
+        "audience": "admin",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "judges_points_calc",
+        "label": "Calculated Points",
+        "audience": "admin",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "unscoutlike",
+        "label": "Un-Scout-like Behavior (Penalty)",
+        "audience": "judge",
+        "sortOrder": 998,
+        "config": {
+          "min": 0,
+          "max": 100,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "penalty",
+        "weight": -1
+      },
+      {
+        "id": "judge_notes",
+        "label": "Judge Notes / Comments",
+        "audience": "judge",
+        "sortOrder": 999,
+        "config": {
+          "placeholder": "Optional notes on performance..."
+        },
+        "type": "textarea",
+        "kind": "metric",
+        "weight": 0
+      }
+    ]
+  }
+}

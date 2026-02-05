@@ -1,0 +1,63 @@
+[
+  {
+    "id": "p_flag",
+    "label": "Patrol Flag",
+    "type": "number",
+    "kind": "points",
+    "weight": 10,
+    "audience": "judge",
+    "config": {
+      "min": 0,
+      "max": 10,
+      "placeholder": "0-10 Points"
+    }
+  },
+  {
+    "id": "p_yell",
+    "label": "Patrol Yell",
+    "type": "number",
+    "kind": "points",
+    "weight": 5,
+    "audience": "judge",
+    "config": {
+      "min": 0,
+      "max": 5,
+      "placeholder": "0-5 Points"
+    }
+  },
+  {
+    "id": "p_spirit",
+    "label": "Scout Spirit",
+    "type": "number",
+    "kind": "points",
+    "weight": 10,
+    "audience": "judge",
+    "config": {
+      "min": 0,
+      "max": 10,
+      "placeholder": "0-10 Points"
+    }
+  },
+  {
+    "id": "off_notes",
+    "label": "Judges Notes",
+    "type": "textarea",
+    "kind": "info",
+    "weight": 0,
+    "audience": "judge",
+    "config": {
+      "placeholder": "Issues, tie-breakers, etc."
+    }
+  },
+  {
+    "id": "off_score",
+    "label": "Official Score",
+    "type": "number",
+    "kind": "points",
+    "weight": 1,
+    "audience": "admin",
+    "config": {
+      "placeholder": "Final Calculated Points"
+    }
+  }
+]

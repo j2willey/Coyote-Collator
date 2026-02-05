@@ -1,0 +1,176 @@
+{
+  "schemaVersion": "2.7",
+  "meta": {
+    "title": "Converted Camporee",
+    "theme": "",
+    "year": 2026,
+    "director": ""
+  },
+  "playlist": [
+    {
+      "gameId": "e1",
+      "enabled": true,
+      "order": 1
+    },
+    {
+      "gameId": "p1",
+      "enabled": true,
+      "order": 2
+    },
+    {
+      "gameId": "t1",
+      "enabled": true,
+      "order": 3
+    },
+    {
+      "gameId": "p2",
+      "enabled": true,
+      "order": 4
+    },
+    {
+      "gameId": "t2",
+      "enabled": true,
+      "order": 5
+    },
+    {
+      "gameId": "p3",
+      "enabled": true,
+      "order": 6
+    },
+    {
+      "gameId": "t3",
+      "enabled": true,
+      "order": 7
+    },
+    {
+      "gameId": "p4",
+      "enabled": true,
+      "order": 8
+    },
+    {
+      "gameId": "t4",
+      "enabled": true,
+      "order": 9
+    },
+    {
+      "gameId": "p5",
+      "enabled": true,
+      "order": 10
+    },
+    {
+      "gameId": "t5",
+      "enabled": true,
+      "order": 11
+    },
+    {
+      "gameId": "p6",
+      "enabled": true,
+      "order": 12
+    },
+    {
+      "gameId": "t6",
+      "enabled": true,
+      "order": 13
+    },
+    {
+      "gameId": "p7",
+      "enabled": true,
+      "order": 14
+    },
+    {
+      "gameId": "t7",
+      "enabled": true,
+      "order": 15
+    },
+    {
+      "gameId": "p8",
+      "enabled": true,
+      "order": 16
+    },
+    {
+      "gameId": "t8",
+      "enabled": true,
+      "order": 17
+    },
+    {
+      "gameId": "p9",
+      "enabled": true,
+      "order": 18
+    },
+    {
+      "gameId": "t9",
+      "enabled": true,
+      "order": 19
+    },
+    {
+      "gameId": "p10",
+      "enabled": true,
+      "order": 20
+    },
+    {
+      "gameId": "t10",
+      "enabled": true,
+      "order": 21
+    },
+    {
+      "gameId": "p11",
+      "enabled": true,
+      "order": 22
+    },
+    {
+      "gameId": "t11",
+      "enabled": true,
+      "order": 23
+    },
+    {
+      "gameId": "p12",
+      "enabled": true,
+      "order": 24
+    },
+    {
+      "gameId": "p13",
+      "enabled": true,
+      "order": 25
+    },
+    {
+      "gameId": "p14",
+      "enabled": true,
+      "order": 26
+    },
+    {
+      "gameId": "p15",
+      "enabled": true,
+      "order": 27
+    },
+    {
+      "gameId": "p16",
+      "enabled": true,
+      "order": 28
+    },
+    {
+      "gameId": "p17",
+      "enabled": true,
+      "order": 29
+    },
+    {
+      "gameId": "p18",
+      "enabled": true,
+      "order": 30
+    },
+    {
+      "gameId": "p19",
+      "enabled": true,
+      "order": 31
+    },
+    {
+      "gameId": "p20",
+      "enabled": true,
+      "order": 32
+    },
+    {
+      "gameId": "p21",
+      "enabled": true,
+      "order": 33
+    }
+  ]
+}

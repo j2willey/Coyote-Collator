@@ -1,0 +1,93 @@
+{
+  "id": "p2",
+  "type": "patrol",
+  "schemaVersion": "2.7",
+  "content": {
+    "title": "Kraken the First Aid Code",
+    "story": "",
+    "instructions": ""
+  },
+  "scoring": {
+    "method": "points_desc",
+    "components": [
+      {
+        "id": "patrol_flag",
+        "label": "Patrol Flag?",
+        "audience": "judge",
+        "sortOrder": 1,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "patrol_yell",
+        "label": "Patrol Yell?",
+        "audience": "judge",
+        "sortOrder": 2,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "patrol_spirit",
+        "label": "Patrol Spirit",
+        "audience": "judge",
+        "sortOrder": 3,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "time",
+        "label": "Time",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "stopwatch",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "unscoutlike",
+        "label": "Un-Scout-like Behavior (Penalty)",
+        "audience": "judge",
+        "sortOrder": 998,
+        "config": {
+          "min": 0,
+          "max": 100,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "penalty",
+        "weight": -1
+      },
+      {
+        "id": "judge_notes",
+        "label": "Judge Notes / Comments",
+        "audience": "judge",
+        "sortOrder": 999,
+        "config": {
+          "placeholder": "Optional notes on performance..."
+        },
+        "type": "textarea",
+        "kind": "metric",
+        "weight": 0
+      }
+    ]
+  }
+}

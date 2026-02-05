@@ -1,0 +1,25 @@
+{
+  "id": "e1",
+  "type": "exhibition",
+  "schemaVersion": "2.7",
+  "content": {
+    "title": "Exhibition Game",
+    "story": "",
+    "instructions": ""
+  },
+  "scoring": {
+    "method": "points_desc",
+    "components": [
+      {
+        "id": "patrol_spirit",
+        "label": "Patrol Spirit",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      }
+    ]
+  }
+}

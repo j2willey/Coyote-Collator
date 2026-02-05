@@ -1,0 +1,225 @@
+{
+  "id": "t7",
+  "type": "troop",
+  "schemaVersion": "2.7",
+  "content": {
+    "title": "Campsite Inspection",
+    "story": "",
+    "instructions": ""
+  },
+  "scoring": {
+    "method": "points_desc",
+    "components": [
+      {
+        "id": "u_s_and_unit_flag_posted",
+        "label": "U.S. and unit flag posted",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "gateway_or_welcome_sign_with_unit_identity",
+        "label": "Gateway or welcome sign \n(with unit identity)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "educational_theme_poster_or_banner_on_display",
+        "label": "Educational theme poster \nor banner on display",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "theme_props_or_camp_gadgets_on_display",
+        "label": "Theme props or camp \ngadgets on display",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "overall_impression_neat_and_orderly",
+        "label": "Overall impression neat \nand orderly",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "tents_organized_by_patrols",
+        "label": "Tents organized by patrols",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "grounds_free_of_hazards_trip_hazards_marked",
+        "label": "Grounds free of hazards \n(trip hazards marked)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "grounds_free_of_litter_including_trails_around_campsite",
+        "label": "Grounds free of litter \n(including trails around campsite)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "personal_gear_stowed_in_tents",
+        "label": "Personal gear stowed in tents",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "tents_secured_staked_doors_zipped_rain_covered",
+        "label": "Tents secured (staked, doors \nzipped, rain-covered)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "menus_posted_meals_well_balanced",
+        "label": "Menus posted \n(meals well balanced)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "duty_rosters_posted_cooks_water_fire_cleanup_etc",
+        "label": "Duty rosters posted \n(cooks, water, fire, cleanup, etc.)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "kitchen_area_and_utensils_clean",
+        "label": "Kitchen area and utensils clean",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "kitchen_fly_pitched_over_food_preparation_area",
+        "label": "Kitchen fly pitched over \nfood preparation area",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "food_storage_secured_from_animals_or_hungry_staff",
+        "label": "Food storage secured from \nanimals (or hungry staff)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "perishable_foods_properly_refrigerated_on_ice",
+        "label": "Perishable foods properly \nrefrigerated (on ice)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "first_aid_kit_properly_stocked_and_easily_accessible",
+        "label": "First aid kit properly stocked \nand easily accessible",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "fire_tools_at_ready_full_water_container_rake_or_shovel",
+        "label": "Fire tools at ready (full water \ncontainer, rake or shovel)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "duff_cleared_away_from_fire_pit",
+        "label": "Duff cleared away from fire pit",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "equipment_stored_safely_axes_fuel_lanterns_stoves_etc",
+        "label": "Equipment stored safely \n(axes, fuel, lanterns, stoves, etc.)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "garbage_contained_overflow_removed_from_site",
+        "label": "Garbage contained \n(overflow removed from site)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "id": "p10",
+  "type": "patrol",
+  "schemaVersion": "2.7",
+  "content": {
+    "title": "Ladder Lashing",
+    "story": "",
+    "instructions": ""
+  },
+  "scoring": {
+    "method": "points_desc",
+    "components": [
+      {
+        "id": "patrol_flag",
+        "label": "Patrol Flag?",
+        "audience": "judge",
+        "sortOrder": 1,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "patrol_yell",
+        "label": "Patrol Yell?",
+        "audience": "judge",
+        "sortOrder": 2,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "patrol_spirit",
+        "label": "Patrol Spirit",
+        "audience": "judge",
+        "sortOrder": 3,
+        "config": {
+          "min": 0,
+          "max": 5,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "ascending_order",
+        "label": "ascending order",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "uniformly_spaced",
+        "label": "uniformly spaced",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "proper_lashings_2_ea_20_pt",
+        "label": "Proper lashings\n(2 ea × 20 pt)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "tight_and_sturdy",
+        "label": "tight and sturdy",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "secured_to_anchor_post",
+        "label": "secured to anchor post",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "all_patrol_members_complete_the_climb_within_time_limit",
+        "label": "All patrol members complete the climb within time limit",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "stopwatch",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "spirited_celebration",
+        "label": "Spirited celebration",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "disassemble_ladder_stack_materials",
+        "label": "Disassemble ladder, \nstack materials",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "number",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "more_than_one_scout_on_ladder_at_a_time_5_pt_each_instance",
+        "label": "More than one Scout\non ladder at a time \n(-5 pt each instance)",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "stopwatch",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "timed",
+        "label": "Time\nmm:ss",
+        "audience": "judge",
+        "sortOrder": 900,
+        "config": {},
+        "type": "stopwatch",
+        "kind": "points",
+        "weight": 1
+      },
+      {
+        "id": "unscoutlike",
+        "label": "Un-Scout-like Behavior (Penalty)",
+        "audience": "judge",
+        "sortOrder": 998,
+        "config": {
+          "min": 0,
+          "max": 100,
+          "defaultValue": 0
+        },
+        "type": "number",
+        "kind": "penalty",
+        "weight": -1
+      },
+      {
+        "id": "judge_notes",
+        "label": "Judge Notes / Comments",
+        "audience": "judge",
+        "sortOrder": 999,
+        "config": {
+          "placeholder": "Optional notes on performance..."
+        },
+        "type": "textarea",
+        "kind": "metric",
+        "weight": 0
+      }
+    ]
+  }
+}
