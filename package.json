@@ -11,15 +11,17 @@
     "test": "npx playwright test"
   },
   "dependencies": {
+    "adm-zip": "^0.5.16",
     "better-sqlite3": "^9.0.0",
     "body-parser": "^1.20.2",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
+    "multer": "^2.0.2",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "terser": "^5.19.2",
-    "@playwright/test": "^1.58.1"
+    "@playwright/test": "^1.58.1",
+    "terser": "^5.19.2"
   },
   "engines": {
     "node": ">=20.0.0"
