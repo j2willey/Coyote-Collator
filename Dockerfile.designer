@@ -1,0 +1,33 @@
+# --- STAGE 1: BUILDER ---
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# 1. Install ALL dependencies (including 'terser' for the build)
+COPY package*.json ./
+RUN npm install
+
+# 2. Copy source code
+COPY . .
+
+# 3. Run the minification script
+# This creates the optimized 'designer_app.js' inside this temporary container
+RUN npm run minify
+
+# --- STAGE 2: PRODUCTION ---
+FROM node:20-alpine
+
+WORKDIR /app
+
+# 1. Install ONLY production dependencies (saves space)
+COPY package*.json ./
+RUN npm install --production
+
+# 2. Copy the code (including the minified JS) from the builder stage
+COPY --from=builder /app .
+
+# 3. Expose the Designer Port
+EXPOSE 3001
+
+# 4. Start the DESIGNER script (not the default start script)
+CMD ["npm", "run", "designer"]

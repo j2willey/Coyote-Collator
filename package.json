@@ -7,18 +7,21 @@
   "scripts": {
     "start": "node server.js",
     "designer": "node designer_server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "minify": "terser public/js/designer_app.js -o public/js/designer_app.js --compress --mangle",
+    "test": "npx playwright test"
   },
   "dependencies": {
     "better-sqlite3": "^9.0.0",
-    "ejs": "^4.0.1",
+    "body-parser": "^1.20.2",
+    "ejs": "^3.1.9",
     "express": "^4.18.2",
     "xlsx": "^0.18.5"
   },
+  "devDependencies": {
+    "terser": "^5.19.2",
+    "@playwright/test": "^1.58.1"
+  },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.58.1"
   }
 }
