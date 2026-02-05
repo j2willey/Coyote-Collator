@@ -889,4 +889,7 @@ function submitScore(e) {
 }
 
 window.app = { init, navigate, refreshData, selectStation, selectEntity, showEntitySelect, combineTime, submitScore, setMode, promptNewEntity, toggleJudgeModal, saveJudgeInfo, handleBack, saveDraft };
-init();
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+});
