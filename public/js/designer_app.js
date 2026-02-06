@@ -3,6 +3,9 @@
  * Features: Auto-Detect Server, Split Tabs, Drag/Drop, Atomic Presets.
  */
 
+import { normalizeGameDefinition } from './core/schema.js';
+import { generateFieldHTML } from './core/ui.js';
+
 const designer = {
     // 1. THE STATE
     serverMode: false, // Feature Flag: True if backend is detected
@@ -605,6 +608,9 @@ const designer = {
                     <button class="btn btn-sm btn-outline-secondary border-0" onclick="event.stopPropagation(); designer.duplicateGame('${game.id}')">
                         <i class="fas fa-copy"></i>
                     </button>
+                    <button class="btn btn-sm btn-outline-primary border-0" onclick="event.stopPropagation(); designer.renderPreview('${game.id}')" title="Preview Form">
+                        <i class="fas fa-eye"></i>
+                    </button>
                     <button class="btn btn-sm btn-outline-danger border-0" onclick="event.stopPropagation(); designer.deleteGame('${game.id}')">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -671,6 +677,9 @@ const designer = {
                             <option value="points_desc">Highest Points</option>
                             <option value="timed_asc">Lowest Time</option>
                         </select>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="designer.renderPreview('${gameId}')" title="Preview Form">
+                            <i class="fas fa-eye"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="card-body bg-light">
@@ -982,6 +991,29 @@ const designer = {
         bootstrap.Modal.getInstance(document.getElementById('presetModal')).hide();
     },
 
+    // 9.5 PREVIEW
+    renderPreview: function(gameId) {
+        const game = this.data.games.find(g => g.id === gameId);
+        if (!game) return;
+
+        // Normalize using schema.js
+        const normalized = normalizeGameDefinition(game);
+
+        // Generate HTML
+        const html = normalized.fields.map(f => generateFieldHTML(f)).join('');
+
+        // Inject into modal
+        const modalBody = document.getElementById('previewModalBody');
+        const modalTitle = document.getElementById('previewModalTitle');
+        if (modalBody) modalBody.innerHTML = html;
+        if (modalTitle) modalTitle.innerText = "Preview: " + (game.content.title || "Game");
+
+        // Show Modal
+        if (window.bootstrap) {
+            new bootstrap.Modal(document.getElementById('previewModal')).show();
+        }
+    },
+
     // 10. EXPORT LOGIC
     exportCamporee: function() {
         this.normalizeGameSortOrders();
@@ -1154,4 +1186,5 @@ const designer = {
     }
 };
 
+window.designer = designer;
 window.onload = function() { designer.init(); };
