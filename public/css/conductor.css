@@ -1,0 +1,22 @@
+:root {
+    --conductor-primary: #0d6efd;
+    --conductor-success: #198754;
+    --conductor-info: #0dcaf0;
+    --conductor-warning: #ffc107;
+    --conductor-danger: #dc3545;
+    --conductor-light: #f8f9fa;
+    --conductor-dark: #212529;
+
+    --conductor-spacing-sm: 0.5rem;
+    --conductor-spacing-md: 1rem;
+    --conductor-spacing-lg: 2rem;
+}
+
+.conductor-header {
+    background-color: var(--conductor-dark);
+    color: var(--conductor-light);
+    padding: var(--conductor-spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

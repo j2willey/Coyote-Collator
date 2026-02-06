@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import multer from 'multer';
 import AdmZip from 'adm-zip';
+import { normalizeGameDefinition } from './public/js/core/schema.js';
 
 // --- CONFIGURATION & PATHS ---
 const __filename = fileURLToPath(import.meta.url);
@@ -122,31 +123,14 @@ function loadCamporeeData() {
                     if (fs.existsSync(gamePath)) {
                         const gameDef = JSON.parse(fs.readFileSync(gamePath, 'utf8'));
 
-                        // --- THE TRANSLATION LAYER ---
-                        // Map Designer Schema (scoring.components) -> Collator Schema (fields)
-                        if (gameDef.scoring && gameDef.scoring.components) {
-                            gameDef.fields = gameDef.scoring.components.map(comp => ({
-                                id: comp.id,
-                                label: comp.label,
-                                type: comp.type === 'stopwatch' ? 'timed' : comp.type,
-                                kind: comp.kind,
-                                weight: comp.weight,
-                                audience: comp.audience,
-                                ...comp.config // Spread min/max/placeholder into root
-                            }));
-                        } else if (!gameDef.fields) {
-                            gameDef.fields = [];
-                        }
-
-                        // Inject runtime sort order from playlist
-                        gameDef.sortOrder = item.order * 10;
-
+                        const normalizedGame = normalizeGameDefinition(gameDef, item.order);
                         // Ensure legacy 'name' property exists (Designer uses content.title)
                         if (!gameDef.name && gameDef.content && gameDef.content.title) {
                             gameDef.name = gameDef.content.title;
+                            normalizedGame.name = gameDef.content.title;
                         }
 
-                        games.push(gameDef);
+                        games.push(normalizedGame);
                     }
                 }
             });
