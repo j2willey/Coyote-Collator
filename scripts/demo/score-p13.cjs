@@ -5,7 +5,7 @@ const gameName = "Underwater Treasure Hunt";
 const judgeInfo = {
     name: "Demo Judge 5",
     email: "demojudge5@acme.com",
-    unit: "District"
+    unit: "Troop 508"
 };
 const patrols = [
   {

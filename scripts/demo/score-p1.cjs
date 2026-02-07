@@ -5,7 +5,7 @@ const gameName = "Boiling the Ocean";
 const judgeInfo = {
     name: "Demo Judge 1",
     email: "demojudge1@acme.com",
-    unit: "Troop 129"
+    unit: "Troop 489"
 };
 const patrols = [
   {

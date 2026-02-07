@@ -5,7 +5,7 @@ const gameName = "Colorguard Game";
 const judgeInfo = {
     name: "Demo Judge 19",
     email: "demojudge19@acme.com",
-    unit: "District"
+    unit: "Troop 971"
 };
 const patrols = [
   {

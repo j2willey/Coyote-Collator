@@ -71,7 +71,12 @@
             <div class="mb-3"><label class="form-label">Full Name</label><input type="text" id="judge-name" placeholder="e.g. Bill Scout" class="form-control"></div>
             <div class="mb-3"><label class="form-label">Email Address</label><input type="email" id="judge-email" placeholder="Required for ID" class="form-control"></div>
             <div class="mb-4"><label class="form-label">Unit/Troop</label><input type="text" id="judge-unit" placeholder="e.g. Troop 101" class="form-control"></div>
-            <button class="btn btn-secondary w-100" onclick="app.saveJudgeInfo()">Save & Close</button>
+            <button class="btn btn-secondary w-100 mb-4" onclick="app.saveJudgeInfo()">Save & Close</button>
+
+            <div class="border-top pt-3 mt-2 text-center">
+                <p class="text-danger small fw-bold mb-2">Troubleshooting</p>
+                <button class="btn btn-outline-danger btn-sm w-100" onclick="app.resetAppData()">⚠️ Reset Local Data & Reload</button>
+            </div>
         </div>
     </div>
 
@@ -102,15 +107,19 @@
             <button id="btn-submit" class="btn btn-large btn-secondary">Submit Score</button>
         </div>
 
-        <div id="view-bracket-lobby" class="hidden">
-            <h2 id="bracket-lobby-title">Competition Lobby</h2>
-            <p class="text-muted small">Select teams to check-in for this event.</p>
-            <div class="d-flex gap-2 mb-3">
-                <button class="btn btn-outline-primary flex-grow-1" onclick="app.bracketSelectAll(true)">Select All</button>
-                <button class="btn btn-outline-secondary flex-grow-1" onclick="app.bracketSelectAll(false)">Clear</button>
+        <div id="view-bracket-lobby" class="hidden d-flex flex-column" style="height: calc(100vh - 60px);">
+
+            <div class="flex-shrink-0 bg-white border-bottom pb-3 pt-2 px-1 mb-0 sticky-top" style="z-index: 10;">
+                <p class="text-muted small mb-2 text-center">Select teams to check-in for this event.</p>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary flex-grow-1 py-2" onclick="app.bracketSelectAll(true)">Select All</button>
+                    <button class="btn btn-outline-secondary flex-grow-1 py-2" onclick="app.bracketSelectAll(false)">Clear</button>
+                    <button class="btn btn-success flex-grow-1 fw-bold py-2" onclick="app.bracketStartEvent()">Start Event</button>
+                </div>
             </div>
-            <div id="bracket-lobby-list" class="list-group mb-3"></div>
-            <button class="btn btn-success w-100 py-3 fw-bold" onclick="app.bracketStartEvent()">START COMPETITION</button>
+
+            <div id="bracket-lobby-list" class="list-group list-group-flush flex-grow-1 overflow-auto pb-5">
+                </div>
         </div>
 
         <div id="view-bracket-round" class="hidden d-flex flex-column" style="height: calc(100vh - 60px);">
@@ -121,7 +130,7 @@
                         <h2 id="bracket-round-title" class="mb-0 me-2">Round 1</h2>
                         <span onclick="app.bracketRenameRound()" style="cursor: pointer; font-size: 1.2rem;">✏️</span>
                     </div>
-                    <button class="btn btn-primary btn-sm py-1 px-3 shadow-sm" onclick="app.bracketCreateHeat()">+ New Heat</button>
+                    <button class="btn btn-primary btn-sm py-1 px-3 shadow-sm w-auto flex-grow-0" onclick="app.bracketCreateHeat()">+ New Heat</button>
                 </div>
                 <div class="small text-muted mt-1">
                     Select teams below to create a heat. <span class="badge bg-secondary rounded-pill" id="bracket-pool-count">0</span> remaining.
@@ -132,7 +141,8 @@
                 </div>
 
             <div class="flex-shrink-0 border-top pt-3 pb-2 bg-white mt-auto">
-                <button class="btn btn-success w-100 py-3 fw-bold shadow" onclick="app.bracketAdvanceRound()">FINALIZE & ADVANCE >></button>
+                <div id="bracket-footer-options" class="px-3 mb-2"></div>
+                <button id="btn-bracket-advance" class="btn btn-success w-100 py-3 fw-bold shadow" onclick="app.bracketAdvanceRound()">NEXT ROUND >></button>
             </div>
         </div>
 
@@ -158,13 +168,77 @@
         </div>
 
     </main>
+    <div id="podium-modal" class="judge-modal hidden" style="z-index: 2000;">
+        <div class="card w-100 border-0 shadow-lg" style="max-width: 500px; height: 90vh; display: flex; flex-direction: column;">
+            <div class="card-header bg-success text-white text-center py-3">
+                <h2 class="mb-0">🏆 Tournament Complete</h2>
+                <p class="mb-0 small opacity-75">Confirm standings and award points.</p>
+            </div>
+
+            <div class="card-body overflow-auto bg-light">
+
+                <div class="card mb-3 border-warning shadow-sm">
+                    <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between">
+                        <span>🥇 1st Place</span>
+                        <span id="podium-pts-1" class="badge bg-dark">100 pts</span>
+                    </div>
+                    <div class="card-body p-2">
+                        <select id="select-rank-1" class="form-select form-select-lg fw-bold text-success"></select>
+                    </div>
+                </div>
+
+                <div class="card mb-3 border-secondary shadow-sm">
+                    <div class="card-header bg-secondary text-white fw-bold d-flex justify-content-between">
+                        <span>🥈 2nd Place</span>
+                        <span id="podium-pts-2" class="badge bg-dark">75 pts</span>
+                    </div>
+                    <div class="card-body p-2">
+                        <select id="select-rank-2" class="form-select fw-bold"></select>
+                    </div>
+                </div>
+
+                <div class="card mb-3 border-danger shadow-sm" style="border-color: #cd7f32 !important;">
+                    <div class="card-header text-white fw-bold d-flex justify-content-between" style="background-color: #cd7f32;">
+                        <span>🥉 3rd Place</span>
+                        <span id="podium-pts-3" class="badge bg-dark">50 pts</span>
+                    </div>
+                    <div class="card-body p-2">
+                        <select id="select-rank-3" class="form-select"></select>
+                    </div>
+                </div>
+
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light text-muted fw-bold d-flex justify-content-between">
+                        <span>4th Place</span>
+                        <span id="podium-pts-4" class="badge bg-secondary">25 pts</span>
+                    </div>
+                    <div class="card-body p-2">
+                        <select id="select-rank-4" class="form-select"></select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer bg-white border-top p-3 d-grid gap-2">
+                <button class="btn btn-success btn-lg fw-bold" onclick="app.bracketSubmitPodium()">CONFIRM & AWARD POINTS</button>
+                <button class="btn btn-outline-secondary" onclick="app.togglePodiumModal(false)">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module" src="js/app.js"></script>
     <script>
+        // SERVICE WORKER KILLER
+        // Forces unregistration of any existing SW to prevent stale code caching during dev.
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(reg => console.log('SW Registered'))
-                .catch(err => console.log('SW Fail', err));
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    console.log('Unregistering Service Worker:', registration);
+                    registration.unregister();
+                }
+            });
+            // Force reload if we suspect we are stale (optional, but good for manual refresh)
+            console.log("Service Workers cleared. If app behaves strictly, Hard Refresh.");
         }
     </script>
 </body>

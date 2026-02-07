@@ -84,6 +84,24 @@ async function init() {
     navigate('home');
 }
 
+// --- DATA MANAGEMENT ---
+
+function resetAppData() {
+    if(!confirm("⚠️ RESET WARNING ⚠️\n\nThis will wipe all local tournament brackets and draft scores.\nIt effectively 'Fresh Installs' the app.\n\nData already sent to the server is safe.\n\nProceed?")) return;
+
+    // 1. Preserve Judge Identity
+    const judge = localStorage.getItem('judge_info');
+
+    // 2. Nuke everything else
+    localStorage.clear();
+
+    // 3. Restore Judge Identity
+    if(judge) localStorage.setItem('judge_info', judge);
+
+    // 4. Reload to fetch fresh server state
+    window.location.reload();
+}
+
 // --- Navigation ---
 
 function navigate(viewName) {
@@ -118,21 +136,38 @@ function navigate(viewName) {
 }
 
 function handleBack() {
-    const visibleView = Object.keys(views).find(key => !views[key].classList.contains('hidden'));
-
-    if (visibleView === 'scoring') {
-        renderEntityList();
-        navigate('entity');
-    } else if (visibleView === 'entity') {
-        navigate('home');
-    } else if (visibleView === 'bracketLobby') {
-        navigate('home');
-    } else if (visibleView === 'bracketRound') {
-        if(confirm("Exit Tournament Manager?")) navigate('home');
-    } else if (visibleView === 'bracketHeat') {
+    // 1. Heat -> Round (Existing)
+    if (state.view === 'bracketHeat') {
         navigate('bracketRound');
+        return;
+    }
+
+    // 2. Round -> Lobby (NEW: No confirmation, just go "Up" a level)
+    if (state.view === 'bracketRound') {
+        navigate('bracketLobby');
+        return;
+    }
+
+    // 3. Lobby -> Home (Exit Confirmation)
+    if (state.view === 'bracketLobby') {
+        if (confirm("Exit Tournament Manager?")) {
+            navigate('home');
+        }
+        return;
+    }
+
+    // 4. Default Handling
+    const history = state.navHistory || [];
+    if (history.length > 0) {
+        const prev = history.pop(); // Remove current
+        const target = history.pop(); // Get previous
+        if (target) navigate(target);
+        else navigate('home');
+    } else {
+        navigate('home');
     }
 }
+
 
 // --- Mode Tabs & Station Selection ---
 
@@ -516,14 +551,49 @@ function saveBracketState() {
 // 1. LOBBY
 function renderBracketLobby() {
     const s = state.currentStation;
-    document.getElementById('bracket-lobby-title').innerText = `${s.name} (Lobby)`;
+
+    // Update Header
+    document.getElementById('header-title').textContent = `${s.name} (Lobby)`;
+
+    // 1. Detect if Event is already running
+    const bracket = state.bracketData[s.id];
+    const activeIds = new Set();
+    let isRunning = false;
+
+    if (bracket && bracket.rounds.length > 0) {
+        isRunning = true;
+        // Collect all teams currently in the active round (Pool + Heats)
+        const round = bracket.rounds[state.currentRoundIdx];
+        if (round) {
+            round.pool.forEach(id => activeIds.add(id));
+            round.heats.forEach(h => h.teams.forEach(id => activeIds.add(id)));
+        }
+    }
+
+    // 2. Render Team List (Pre-check active teams)
     const requiredType = s.type || state.viewMode;
     const entities = state.entities.filter(e => e.type === requiredType).sort((a,b) => (parseInt(a.troop_number)||0) - (parseInt(b.troop_number)||0));
-    els.lobbyList.innerHTML = entities.map(e => `
-        <label class="list-group-item d-flex gap-3 align-items-center">
-            <input class="form-check-input flex-shrink-0" type="checkbox" value="${e.id}" style="transform: scale(1.3);">
-            <div><strong>${formatEntityLabel(e)}</strong><div class="small text-muted">#${e.id}</div></div>
-        </label>`).join('');
+
+    els.lobbyList.innerHTML = entities.map(e => {
+        const isChecked = activeIds.has(e.id) ? 'checked' : '';
+        // Visual cue: If they are already in, maybe bold them or dim the checkbox slightly?
+        // For now, simple check is sufficient.
+        return `
+        <label class="list-group-item d-flex gap-3 align-items-center py-3">
+            <input class="form-check-input flex-shrink-0" type="checkbox" value="${e.id}" ${isChecked} style="transform: scale(1.3);">
+            <div>
+                <div class="fw-bold" style="font-size: 1.1rem;">${formatEntityLabel(e)}</div>
+                <div class="small text-muted">ID: #${e.id}</div>
+            </div>
+        </label>`;
+    }).join('');
+
+    // 3. Update Button Text (Start vs Update)
+    // We look for the green button in the sticky header
+    const btnStart = document.querySelector('#view-bracket-lobby .btn-success');
+    if (btnStart) {
+        btnStart.textContent = isRunning ? "Update Event" : "Start Event";
+    }
 }
 
 function bracketSelectAll(checked) {
@@ -531,23 +601,51 @@ function bracketSelectAll(checked) {
 }
 
 function bracketStartEvent() {
-    const selectedIds = Array.from(els.lobbyList.querySelectorAll('input:checked')).map(cb => cb.value);
-    if (selectedIds.length < 2) return alert("Select at least 2 teams.");
-    const gameId = state.currentStation.id;
-    const bData = state.bracketData[gameId];
-    bData.active = true;
-    bData.rounds = [{ name: "Round 1", pool: selectedIds, heats: [] }];
+    const s = state.currentStation;
+    const checked = [...document.querySelectorAll('#bracket-lobby-list input:checked')].map(i => i.value);
+
+    if (checked.length < 2) return alert("Select at least 2 teams.");
+
+    let bracket = state.bracketData[s.id];
+
+    if (!bracket) {
+        // CASE A: NEW EVENT
+        state.bracketData[s.id] = {
+            rounds: [{ name: "Round 1", pool: checked, heats: [] }]
+        };
+        state.currentRoundIdx = 0;
+    } else {
+        // CASE B: LATE ADD (Update Existing)
+        const round = bracket.rounds[state.currentRoundIdx];
+
+        // 1. Identify who is already here
+        const existing = new Set([...round.pool]);
+        round.heats.forEach(h => h.teams.forEach(t => existing.add(t)));
+
+        // 2. Find the "New" folks
+        const newTeams = checked.filter(id => !existing.has(id));
+
+        if (newTeams.length > 0) {
+            // 3. Add them to the pool
+            round.pool.push(...newTeams);
+            alert(`✅ Added ${newTeams.length} new team(s) to ${round.name}.`);
+        } else {
+            // No new teams found. (User might have just clicked "Update" without changing anything)
+            // We just proceed.
+        }
+    }
+
     saveBracketState();
-    state.currentRoundIdx = 0;
-    renderBracketRound();
     navigate('bracketRound');
 }
 
-// 2. ROUND MANAGER (Unified View)
+// 2. ROUND MANAGER
 function renderBracketRound() {
     const gameId = state.currentStation.id;
     const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
 
+    // Header Updates
+    document.getElementById('header-title').textContent = state.currentStation.name;
     document.getElementById('bracket-round-title').innerText = round.name;
     document.getElementById('bracket-pool-count').innerText = round.pool.length;
 
@@ -567,7 +665,10 @@ function renderBracketRound() {
                     <input class="form-check-input form-check-pool flex-shrink-0" type="checkbox" value="${eid}" style="transform: scale(1.3);">
                     <div class="fw-bold text-truncate">${label}</div>
                 </div>
-                <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="event.preventDefault(); app.bracketGrantBye('${eid}')" style="width: auto; font-size: 0.8rem;">Bye</button>
+                <div class="d-flex gap-2">
+                     <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="event.preventDefault(); app.bracketScratchTeam('${eid}')" style="font-size: 0.8rem;">Scratch</button>
+                     <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="event.preventDefault(); app.bracketGrantBye('${eid}')" style="font-size: 0.8rem;">Bye</button>
+                </div>
             </label>`;
         }).join('');
         html += '</div>';
@@ -575,24 +676,21 @@ function renderBracketRound() {
         html += `<div class="alert alert-light text-center text-muted border border-dashed mb-4">All teams assigned to heats.</div>`;
     }
 
-    // SECTION B: The Heats
+    // SECTION B: The Heats (Button Style Fix)
     if (round.heats.length > 0) {
         html += `<h6 class="text-uppercase text-muted fw-bold small mb-2 ps-1 border-top pt-3">Active Heats</h6>`;
 
-        // Sort: Pending Heats first, then Completed
         const sortedHeats = [...round.heats].sort((a,b) => (a.complete === b.complete) ? 0 : a.complete ? 1 : -1);
 
         html += sortedHeats.map((heat) => {
-            // Find original index for click handler (since we sorted the display array)
             const originalIdx = round.heats.findIndex(h => h.id === heat.id);
-
             const teamListHtml = heat.teams.map(eid => {
                 const e = state.entities.find(x => x.id === eid);
                 const label = formatEntityLabel(e);
                 const res = heat.results[eid] || {};
                 const advIcon = res.advance ? '⏩' : '⏹️';
                 const advClass = res.advance ? 'active' : '';
-                const rowClass = res.advance ? 'bg-success-subtle' : ''; // Highlight advancing rows
+                const rowClass = res.advance ? 'bg-success-subtle' : '';
 
                 return `
                     <div class="d-flex justify-content-between align-items-center py-2 px-2 border-bottom ${rowClass}">
@@ -601,17 +699,27 @@ function renderBracketRound() {
                     </div>`;
             }).join('');
 
-            const statusBadge = heat.complete
-                ? '<span class="badge bg-success">Scored</span>'
-                : '<span class="badge bg-warning text-dark">Pending</span>';
+            // Status Badge OR Quick Save Button
+            let statusAction = '';
+            let borderClass = '';
 
-            const borderClass = heat.complete ? 'border-success' : 'border-warning';
+            if (heat.complete) {
+                statusAction = '<span class="badge bg-success">Scored</span>';
+                borderClass = 'border-success';
+            } else {
+                // FIXED: w-auto, flex-grow-0, and outline-secondary (Grey)
+                statusAction = `
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2 w-auto flex-grow-0 shadow-none" onclick="event.stopPropagation(); app.bracketQuickSave(${originalIdx})" title="Quick Save Results" style="line-height: 1.5;">
+                        💾 Save
+                    </button>`;
+                borderClass = 'border-warning';
+            }
 
             return `
             <div class="card shadow-sm mb-3 border-start border-4 ${borderClass}" onclick="app.bracketOpenHeat(${originalIdx})">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
-                    <span class="fw-bold">${heat.name}</span>
-                    ${statusBadge}
+                    <span class="fw-bold text-truncate me-2">${heat.name}</span>
+                    ${statusAction}
                 </div>
                 <div class="card-body p-0">
                     ${teamListHtml}
@@ -621,22 +729,179 @@ function renderBracketRound() {
     }
 
     container.innerHTML = html;
+
+    // SECTION C: Footer (Unchanged)
+    const footerOpts = document.getElementById('bracket-footer-options');
+    const advanceBtn = document.getElementById('btn-bracket-advance');
+
+    if (footerOpts && advanceBtn) {
+        const isSingleHeatAndEmpty = (round.heats.length === 1 && round.pool.length === 0);
+        const showOptions = isSingleHeatAndEmpty || (round.isFinalRound === true);
+
+        if (showOptions) {
+            if (round.isFinalRound === undefined) round.isFinalRound = true;
+            const checkedAttr = round.isFinalRound ? 'checked' : '';
+            footerOpts.innerHTML = `
+                <div class="form-check form-switch d-flex justify-content-center align-items-center gap-2 p-2 bg-light rounded border">
+                    <input class="form-check-input" type="checkbox" id="chk-is-final" ${checkedAttr} style="cursor:pointer; transform: scale(1.2);">
+                    <label class="form-check-label fw-bold" for="chk-is-final" style="cursor:pointer;">This is the Final Round</label>
+                </div>`;
+            const updateButton = () => {
+                const isFinal = document.getElementById('chk-is-final').checked;
+                round.isFinalRound = isFinal;
+                saveBracketState();
+                if (isFinal) {
+                    advanceBtn.innerHTML = "🏆 SUBMIT FINAL RESULTS";
+                    advanceBtn.classList.remove('btn-success');
+                    advanceBtn.classList.add('btn-warning');
+                } else {
+                    advanceBtn.innerHTML = "NEXT ROUND >>";
+                    advanceBtn.classList.remove('btn-warning');
+                    advanceBtn.classList.add('btn-success');
+                }
+            };
+            document.getElementById('chk-is-final').onchange = updateButton;
+            updateButton();
+        } else {
+            footerOpts.innerHTML = '';
+            advanceBtn.innerHTML = "NEXT ROUND >>";
+            advanceBtn.classList.remove('btn-warning');
+            advanceBtn.classList.add('btn-success');
+        }
+    }
 }
 
+// 1. Unified Bye Logic
 function bracketGrantBye(eid) {
-    if(!confirm("Grant a 'Bye' to this team? They will advance to the next round automatically.")) return;
     const gameId = state.currentStation.id;
     const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
-    round.pool = round.pool.filter(id => id !== eid);
-    const heatNum = round.heats.length + 1;
-    round.heats.push({
-        id: Date.now(),
-        name: `Bye (Heat ${heatNum})`,
-        teams: [eid],
-        complete: true,
-        results: { [eid]: { advance: true } }
+
+    // Find or Create a "Byes" heat
+    let byeHeat = round.heats.find(h => h.name === "Byes");
+    if (!byeHeat) {
+        byeHeat = {
+            id: crypto.randomUUID(),
+            name: "Byes",
+            teams: [],
+            results: {},
+            complete: true // Byes are auto-complete
+        };
+        round.heats.push(byeHeat);
+    }
+
+    // Move Team
+    const poolIdx = round.pool.indexOf(eid);
+    if (poolIdx > -1) round.pool.splice(poolIdx, 1);
+
+    byeHeat.teams.push(eid);
+    byeHeat.results[eid] = { advance: true, notes: "Bye" }; // Auto-advance
+
+    saveBracketState();
+    renderBracketRound();
+}
+
+// 2. Scratch Logic
+function bracketScratchTeam(eid) {
+    if (!confirm("Scratch this team? They will be removed from the tournament.")) return;
+
+    const gameId = state.currentStation.id;
+    const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
+
+    // Find or Create a "Scratched" heat (to keep record)
+    let scratchHeat = round.heats.find(h => h.name === "Scratched");
+    if (!scratchHeat) {
+        scratchHeat = {
+            id: crypto.randomUUID(),
+            name: "Scratched",
+            teams: [],
+            results: {},
+            complete: true
+        };
+        round.heats.push(scratchHeat);
+    }
+
+    // Move Team
+    const poolIdx = round.pool.indexOf(eid);
+    if (poolIdx > -1) round.pool.splice(poolIdx, 1);
+
+    scratchHeat.teams.push(eid);
+    scratchHeat.results[eid] = { advance: false, notes: "Scratched" }; // Do NOT advance
+
+    saveBracketState();
+    renderBracketRound();
+}
+
+// 3. Quick Save Logic
+function bracketQuickSave(heatIdx) {
+    const gameId = state.currentStation.id;
+    const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
+    const heat = round.heats[heatIdx];
+
+    // Validate: At least one person must be marked (Advance or Not)
+    // Actually, simply clicking save is enough to "Complete" it.
+
+    heat.complete = true;
+
+    // Generate UUIDs for results if missing
+    heat.teams.forEach(eid => {
+        if (!heat.results[eid]) heat.results[eid] = { advance: false };
+        if (!heat.results[eid].uuid) heat.results[eid].uuid = crypto.randomUUID();
+    });
+
+    saveBracketState();
+    updateSyncCounts();
+    if (state.isOnline) syncManager.sync();
+
+    renderBracketRound();
+    // Don't alert, just update UI (Speed!)
+}
+
+function bracketAdvanceRound() {
+    const gameId = state.currentStation.id;
+    const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
+
+    // 1. Calculate Winners/Losers (Relaxed Logic)
+    const winners = [];
+    const losers = [];
+
+    round.heats.forEach(h => {
+        // We now iterate ALL teams in the heat, ignoring the 'complete' status.
+        // This allows "Quick Toggles" on Pending heats to work.
+        h.teams.forEach(eid => {
+            const res = h.results[eid];
+            if (res && res.advance) {
+                winners.push(eid);
+            } else {
+                // If they have no result OR advance is false, they are a loser
+                losers.push(eid);
+            }
+        });
+    });
+
+    if (winners.length === 0) return alert("No teams marked to advance! Select winners using the arrows (⏩).");
+
+    // 2. DETECT END GAME
+    const finalCheckbox = document.getElementById('chk-is-final');
+    const isExplicitFinal = finalCheckbox ? finalCheckbox.checked : false;
+
+    // Logic: Explicit Checkbox OR Implicit Single Winner
+    const shouldFinish = (finalCheckbox && isExplicitFinal) || (!finalCheckbox && winners.length === 1);
+
+    if (shouldFinish) {
+        openPodiumModal(winners, losers);
+        return;
+    }
+
+    // 3. Normal Advance (Create Next Round)
+    if (!confirm(`Create Round ${state.currentRoundIdx + 2} with ${winners.length} advancing teams?`)) return;
+
+    state.bracketData[gameId].rounds.push({
+        name: `Round ${state.currentRoundIdx + 2}`,
+        pool: winners,
+        heats: []
     });
     saveBracketState();
+    state.currentRoundIdx++;
     renderBracketRound();
 }
 
@@ -783,28 +1048,12 @@ function bracketSaveHeat() {
 window.app = {
     init, navigate, handleBack, refreshData, selectStation, selectEntity,
     submitScore, setMode, promptNewEntity, toggleJudgeModal, saveJudgeInfo,
-    saveDraft, combineTime,
+    saveDraft, combineTime, resetAppData, bracketQuickSave, bracketScratchTeam,
     // Bracket Exports
     bracketSelectAll, bracketStartEvent, bracketCreateHeat, bracketOpenHeat,
     bracketSaveHeat, bracketAdvanceRound, bracketRenameRound, bracketToggleAdvance,
     bracketGrantBye, toggleHeatAdvance
 };
-
-function bracketAdvanceRound() {
-    if (!confirm("Create new Round from teams marked 'Advance'?")) return;
-    const gameId = state.currentStation.id;
-    const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
-    const winners = [];
-    round.heats.forEach(h => {
-        Object.keys(h.results).forEach(eid => { if (h.results[eid].advance) winners.push(eid); });
-    });
-    if (winners.length === 0) return alert("No teams marked to advance!");
-
-    state.bracketData[gameId].rounds.push({ name: `Round ${state.currentRoundIdx + 2}`, pool: winners, heats: [] });
-    saveBracketState();
-    state.currentRoundIdx++;
-    renderBracketRound();
-}
 
 function bracketRenameRound() {
     const gameId = state.currentStation.id;

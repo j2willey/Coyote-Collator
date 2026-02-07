@@ -12,6 +12,8 @@ services:
     volumes:
       - ./camporee:/app/camporee
       - ./data:/app/data
+      - .:/app               # <--- Maps your current folder to the container
+      - /app/node_modules    # <--- Preserves the container's installed dependencies
     restart: unless-stopped
 
   # 2. THE COMPOSER (Builder) - Port 3001

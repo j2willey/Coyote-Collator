@@ -5,7 +5,7 @@ const gameName = "Hook Line and Stretcher";
 const judgeInfo = {
     name: "Demo Judge 21",
     email: "demojudge21@acme.com",
-    unit: "Troop 423"
+    unit: "Troop 353"
 };
 const patrols = [
   {

@@ -5,7 +5,7 @@ const gameName = "Racing Against the Tide";
 const judgeInfo = {
     name: "Demo Judge 9",
     email: "demojudge9@acme.com",
-    unit: "Troop 655"
+    unit: "Troop 195"
 };
 const patrols = [
   {
