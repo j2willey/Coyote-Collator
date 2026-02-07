@@ -124,6 +124,20 @@
 
         <div id="view-bracket-round" class="hidden d-flex flex-column" style="height: calc(100vh - 60px);">
 
+            <ul class="nav nav-tabs nav-fill bg-white border-bottom shadow-sm">
+                <li class="nav-item">
+                    <a class="nav-link active fw-bold py-3 rounded-0" id="tab-bracket-main" href="#" onclick="app.bracketSwitchMode('main')">
+                        🏆 Main Event
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-muted py-3 rounded-0" id="tab-bracket-consolation" href="#" onclick="app.bracketSwitchMode('consolation')">
+                        ♻️ Second Try
+                    </a>
+                </li>
+            </ul>
+            <div id="bracket-alerts" class="hidden"></div>
+
             <div class="flex-shrink-0 bg-white border-bottom pb-2 mb-2 sticky-top" style="z-index: 10;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
@@ -169,58 +183,29 @@
 
     </main>
     <div id="podium-modal" class="judge-modal hidden" style="z-index: 2000;">
-        <div class="card w-100 border-0 shadow-lg" style="max-width: 500px; height: 90vh; display: flex; flex-direction: column;">
-            <div class="card-header bg-success text-white text-center py-3">
-                <h2 class="mb-0">🏆 Tournament Complete</h2>
-                <p class="mb-0 small opacity-75">Confirm standings and award points.</p>
+        <div class="card w-100 border-0 shadow-lg" style="max-width: 600px; max-height: 90vh; display: flex; flex-direction: column;">
+
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h3 class="mb-0">📊 Tournament Results</h3>
+                <p class="mb-0 small opacity-75">Review and confirm final placements.</p>
             </div>
 
-            <div class="card-body overflow-auto bg-light">
-
-                <div class="card mb-3 border-warning shadow-sm">
-                    <div class="card-header bg-warning text-dark fw-bold d-flex justify-content-between">
-                        <span>🥇 1st Place</span>
-                        <span id="podium-pts-1" class="badge bg-dark">100 pts</span>
-                    </div>
-                    <div class="card-body p-2">
-                        <select id="select-rank-1" class="form-select form-select-lg fw-bold text-success"></select>
-                    </div>
-                </div>
-
-                <div class="card mb-3 border-secondary shadow-sm">
-                    <div class="card-header bg-secondary text-white fw-bold d-flex justify-content-between">
-                        <span>🥈 2nd Place</span>
-                        <span id="podium-pts-2" class="badge bg-dark">75 pts</span>
-                    </div>
-                    <div class="card-body p-2">
-                        <select id="select-rank-2" class="form-select fw-bold"></select>
-                    </div>
-                </div>
-
-                <div class="card mb-3 border-danger shadow-sm" style="border-color: #cd7f32 !important;">
-                    <div class="card-header text-white fw-bold d-flex justify-content-between" style="background-color: #cd7f32;">
-                        <span>🥉 3rd Place</span>
-                        <span id="podium-pts-3" class="badge bg-dark">50 pts</span>
-                    </div>
-                    <div class="card-body p-2">
-                        <select id="select-rank-3" class="form-select"></select>
-                    </div>
-                </div>
-
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-header bg-light text-muted fw-bold d-flex justify-content-between">
-                        <span>4th Place</span>
-                        <span id="podium-pts-4" class="badge bg-secondary">25 pts</span>
-                    </div>
-                    <div class="card-body p-2">
-                        <select id="select-rank-4" class="form-select"></select>
-                    </div>
-                </div>
-
+            <div class="card-body p-0 overflow-auto bg-white">
+                <table class="table table-striped mb-0 align-middle">
+                    <thead class="bg-light sticky-top">
+                        <tr>
+                            <th scope="col" class="ps-3">Team</th>
+                            <th scope="col">Outcome</th>
+                            <th scope="col" style="width: 100px;" class="text-center">Rank</th>
+                        </tr>
+                    </thead>
+                    <tbody id="podium-list">
+                        </tbody>
+                </table>
             </div>
 
             <div class="card-footer bg-white border-top p-3 d-grid gap-2">
-                <button class="btn btn-success btn-lg fw-bold" onclick="app.bracketSubmitPodium()">CONFIRM & AWARD POINTS</button>
+                <button class="btn btn-success btn-lg fw-bold" onclick="app.bracketSubmitPodium()">CONFIRM RESULTS</button>
                 <button class="btn btn-outline-secondary" onclick="app.togglePodiumModal(false)">Cancel</button>
             </div>
         </div>

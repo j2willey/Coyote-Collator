@@ -12,6 +12,7 @@ const state = {
     viewMode: 'patrol',
     drafts: {},
     // Bracket State
+    bracketMode: 'main', // 'main' or 'consolation'
     bracketData: JSON.parse(localStorage.getItem('coyote_bracket_data') || '{}'),
     currentRoundIdx: 0,
     currentHeatId: null
@@ -105,6 +106,7 @@ function resetAppData() {
 // --- Navigation ---
 
 function navigate(viewName) {
+    state.view = viewName;
     Object.values(views).forEach(el => {
         if(el) el.classList.add('hidden');
     });
@@ -136,14 +138,22 @@ function navigate(viewName) {
 }
 
 function handleBack() {
-    // 1. Heat -> Round (Existing)
+    // 1. Heat -> Round
     if (state.view === 'bracketHeat') {
         navigate('bracketRound');
         return;
     }
 
-    // 2. Round -> Lobby (NEW: No confirmation, just go "Up" a level)
+    // 2. Round Navigation (Deep -> Shallow -> Lobby)
     if (state.view === 'bracketRound') {
+        // If we are deep in the tournament (Round 2, 3, etc.), just go back one round.
+        if (state.currentRoundIdx > 0) {
+            state.currentRoundIdx--;
+            renderBracketRound();
+            return; // STOP here. Do not navigate away.
+        }
+
+        // Only go to Lobby if we are at the very first round (Index 0)
         navigate('bracketLobby');
         return;
     }
@@ -156,7 +166,7 @@ function handleBack() {
         return;
     }
 
-    // 4. Default Handling
+    // 4. Default Handling (Scoring screens, etc.)
     const history = state.navHistory || [];
     if (history.length > 0) {
         const prev = history.pop(); // Remove current
@@ -570,17 +580,15 @@ function renderBracketLobby() {
         }
     }
 
-    // 2. Render Team List (Pre-check active teams)
+    // 2. Render Team List
     const requiredType = s.type || state.viewMode;
     const entities = state.entities.filter(e => e.type === requiredType).sort((a,b) => (parseInt(a.troop_number)||0) - (parseInt(b.troop_number)||0));
 
     els.lobbyList.innerHTML = entities.map(e => {
         const isChecked = activeIds.has(e.id) ? 'checked' : '';
-        // Visual cue: If they are already in, maybe bold them or dim the checkbox slightly?
-        // For now, simple check is sufficient.
         return `
         <label class="list-group-item d-flex gap-3 align-items-center py-3">
-            <input class="form-check-input flex-shrink-0" type="checkbox" value="${e.id}" ${isChecked} style="transform: scale(1.3);">
+            <input class="form-check-input flex-shrink-0 bracket-lobby-checkbox" type="checkbox" value="${e.id}" ${isChecked} style="transform: scale(1.3);">
             <div>
                 <div class="fw-bold" style="font-size: 1.1rem;">${formatEntityLabel(e)}</div>
                 <div class="small text-muted">ID: #${e.id}</div>
@@ -588,11 +596,57 @@ function renderBracketLobby() {
         </label>`;
     }).join('');
 
-    // 3. Update Button Text (Start vs Update)
-    // We look for the green button in the sticky header
+    // 3. Dynamic Button Logic
     const btnStart = document.querySelector('#view-bracket-lobby .btn-success');
+
     if (btnStart) {
-        btnStart.textContent = isRunning ? "Update Event" : "Start Event";
+        if (!isRunning) {
+            // Case A: Fresh Start
+            btnStart.textContent = "Start Event";
+            btnStart.classList.remove('btn-outline-primary');
+            btnStart.classList.add('btn-success');
+        } else {
+            // Case B: Running Event (Dynamic Labels)
+
+            // Helper function to check state
+            const updateButtonState = () => {
+                const checkedInputs = document.querySelectorAll('.bracket-lobby-checkbox:checked');
+                const checkedIds = Array.from(checkedInputs).map(cb => cb.value);
+
+                // Check if any CHECKED team is NOT in the ACTIVE set (i.e. New Addition)
+                const hasNewTeams = checkedIds.some(id => !activeIds.has(id));
+
+                if (hasNewTeams) {
+                    btnStart.textContent = "Update Event";
+                    btnStart.classList.remove('btn-outline-primary');
+                    btnStart.classList.add('btn-success');
+                } else {
+                    btnStart.textContent = "Return to Event";
+                    btnStart.classList.remove('btn-success');
+                    btnStart.classList.add('btn-outline-primary'); // Neutral color
+                }
+            };
+
+            // Run once immediately
+            updateButtonState();
+
+            // Attach listeners to all checkboxes
+            document.querySelectorAll('.bracket-lobby-checkbox').forEach(cb => {
+                cb.addEventListener('change', updateButtonState);
+            });
+
+            // Hook into "Select All" and "Clear" buttons
+            // We overwrite the onclick to ensure we trigger the update check
+            const btnSelectAll = document.querySelector('#view-bracket-lobby button[onclick*="bracketSelectAll(true)"]');
+            const btnClear = document.querySelector('#view-bracket-lobby button[onclick*="bracketSelectAll(false)"]');
+
+            if (btnSelectAll) {
+                btnSelectAll.onclick = () => { app.bracketSelectAll(true); updateButtonState(); };
+            }
+            if (btnClear) {
+                btnClear.onclick = () => { app.bracketSelectAll(false); updateButtonState(); };
+            }
+        }
     }
 }
 
@@ -608,7 +662,7 @@ function bracketStartEvent() {
 
     let bracket = state.bracketData[s.id];
 
-    if (!bracket) {
+    if (!bracket || !bracket.rounds || bracket.rounds.length === 0) {
         // CASE A: NEW EVENT
         state.bracketData[s.id] = {
             rounds: [{ name: "Round 1", pool: checked, heats: [] }]
@@ -636,23 +690,59 @@ function bracketStartEvent() {
     }
 
     saveBracketState();
+    renderBracketRound();
     navigate('bracketRound');
 }
 
 // 2. ROUND MANAGER
 function renderBracketRound() {
     const gameId = state.currentStation.id;
-    const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
+    const bracket = state.bracketData[gameId];
+
+    // SELECT DATA SOURCE BASED ON MODE
+    let roundList;
+    if (state.bracketMode === 'consolation') {
+        if (!bracket.consolation_rounds) bracket.consolation_rounds = [{ name: "Consolation Rd 1", pool: [], heats: [] }];
+        roundList = bracket.consolation_rounds;
+        document.getElementById('header-title').textContent = `${state.currentStation.name} (2nd Try)`;
+    } else {
+        roundList = bracket.rounds;
+        document.getElementById('header-title').textContent = state.currentStation.name;
+    }
+
+    // Safety check
+    if (!roundList[state.currentRoundIdx]) {
+        state.currentRoundIdx = 0;
+    }
+    const round = roundList[state.currentRoundIdx];
+
+    // --- ALERT SYSTEM (Unchanged) ---
+    const alertBox = document.getElementById('bracket-alerts');
+    if (alertBox) {
+        const warnings = [];
+        for (let i = 0; i < state.currentRoundIdx; i++) {
+            const r = roundList[i];
+            let pendingCount = r.pool.length;
+            r.heats.forEach(h => { if (!h.complete) pendingCount += h.teams.length; });
+            if (pendingCount > 0) warnings.push(`⚠️ <strong>${r.name}:</strong> ${pendingCount} teams left to compete.`);
+        }
+        if (warnings.length > 0) {
+            alertBox.innerHTML = `<div class="alert alert-warning mb-0 rounded-0 text-center border-bottom border-warning shadow-sm" style="font-size: 0.9rem;">${warnings.join('<br>')}</div>`;
+            alertBox.classList.remove('hidden');
+        } else {
+            alertBox.innerHTML = '';
+            alertBox.classList.add('hidden');
+        }
+    }
 
     // Header Updates
-    document.getElementById('header-title').textContent = state.currentStation.name;
     document.getElementById('bracket-round-title').innerText = round.name;
     document.getElementById('bracket-pool-count').innerText = round.pool.length;
 
     const container = document.getElementById('bracket-unified-list');
     let html = '';
 
-    // SECTION A: The Pool
+    // SECTION A: The Pool (Unchanged)
     if (round.pool.length > 0) {
         html += `<h6 class="text-uppercase text-muted fw-bold small mt-2 mb-2 ps-1">Holding Pool</h6>`;
         html += '<div class="list-group mb-4 shadow-sm">';
@@ -673,13 +763,17 @@ function renderBracketRound() {
         }).join('');
         html += '</div>';
     } else {
-        html += `<div class="alert alert-light text-center text-muted border border-dashed mb-4">All teams assigned to heats.</div>`;
+        if (round.heats.length > 0) {
+            html += `<div class="alert alert-light text-center text-muted border border-dashed mb-4">All teams assigned to heats.</div>`;
+        } else {
+            if (state.bracketMode === 'consolation') html += `<div class="alert alert-light text-center text-muted border border-dashed mb-4">Waiting for teams to be eliminated from Main Event.</div>`;
+            else html += `<div class="alert alert-light text-center text-muted border border-dashed mb-4">No teams in this round.</div>`;
+        }
     }
 
-    // SECTION B: The Heats (Button Style Fix)
+    // SECTION B: The Heats (Updated with Final Round Logic)
     if (round.heats.length > 0) {
         html += `<h6 class="text-uppercase text-muted fw-bold small mb-2 ps-1 border-top pt-3">Active Heats</h6>`;
-
         const sortedHeats = [...round.heats].sort((a,b) => (a.complete === b.complete) ? 0 : a.complete ? 1 : -1);
 
         html += sortedHeats.map((heat) => {
@@ -688,18 +782,40 @@ function renderBracketRound() {
                 const e = state.entities.find(x => x.id === eid);
                 const label = formatEntityLabel(e);
                 const res = heat.results[eid] || {};
-                const advIcon = res.advance ? '⏩' : '⏹️';
-                const advClass = res.advance ? 'active' : '';
-                const rowClass = res.advance ? 'bg-success-subtle' : '';
+
+                // --- NEW LOGIC START ---
+                let actionHtml = '';
+                let rowClass = '';
+
+                if (round.isFinalRound) {
+                    // FINAL ROUND: Show Rank Input
+                    const rankVal = res.rank || '';
+                    actionHtml = `
+                        <div class="d-flex align-items-center" onclick="event.stopPropagation()">
+                            <span class="small text-muted me-2">Rank:</span>
+                            <input type="number" class="form-control form-control-sm text-center fw-bold border-secondary"
+                                value="${rankVal}" min="1" max="99" style="width: 50px;"
+                                onchange="app.bracketUpdateRank(${originalIdx}, '${eid}', this.value)" placeholder="#">
+                        </div>`;
+                    if (rankVal == 1) rowClass = 'bg-warning-subtle'; // Gold for 1st
+                    else if (rankVal == 2) rowClass = 'bg-secondary-subtle'; // Silver
+                    else if (rankVal == 3) rowClass = 'bg-danger-subtle'; // Bronze-ish
+                } else {
+                    // NORMAL ROUND: Show Advance Toggle
+                    const advIcon = res.advance ? '⏩' : '⏹️';
+                    const advClass = res.advance ? 'active' : '';
+                    rowClass = res.advance ? 'bg-success-subtle' : '';
+                    actionHtml = `<span class="advance-star ${advClass}" onclick="app.bracketToggleAdvance(${originalIdx}, '${eid}', event)" title="Toggle Advance" style="font-size: 1.4rem;">${advIcon}</span>`;
+                }
+                // --- NEW LOGIC END ---
 
                 return `
                     <div class="d-flex justify-content-between align-items-center py-2 px-2 border-bottom ${rowClass}">
                         <span>${label}</span>
-                        <span class="advance-star ${advClass}" onclick="app.bracketToggleAdvance(${originalIdx}, '${eid}', event)" title="Toggle Advance" style="font-size: 1.4rem;">${advIcon}</span>
+                        ${actionHtml}
                     </div>`;
             }).join('');
 
-            // Status Badge OR Quick Save Button
             let statusAction = '';
             let borderClass = '';
 
@@ -707,7 +823,6 @@ function renderBracketRound() {
                 statusAction = '<span class="badge bg-success">Scored</span>';
                 borderClass = 'border-success';
             } else {
-                // FIXED: w-auto, flex-grow-0, and outline-secondary (Grey)
                 statusAction = `
                     <button class="btn btn-sm btn-outline-secondary py-0 px-2 w-auto flex-grow-0 shadow-none" onclick="event.stopPropagation(); app.bracketQuickSave(${originalIdx})" title="Quick Save Results" style="line-height: 1.5;">
                         💾 Save
@@ -750,6 +865,7 @@ function renderBracketRound() {
                 const isFinal = document.getElementById('chk-is-final').checked;
                 round.isFinalRound = isFinal;
                 saveBracketState();
+                renderBracketRound(); // Re-render to toggle inputs vs stars
                 if (isFinal) {
                     advanceBtn.innerHTML = "🏆 SUBMIT FINAL RESULTS";
                     advanceBtn.classList.remove('btn-success');
@@ -761,7 +877,16 @@ function renderBracketRound() {
                 }
             };
             document.getElementById('chk-is-final').onchange = updateButton;
-            updateButton();
+            // Ensure button state is correct on load
+             if (round.isFinalRound) {
+                    advanceBtn.innerHTML = "🏆 SUBMIT FINAL RESULTS";
+                    advanceBtn.classList.remove('btn-success');
+                    advanceBtn.classList.add('btn-warning');
+            } else {
+                    advanceBtn.innerHTML = "NEXT ROUND >>";
+                    advanceBtn.classList.remove('btn-warning');
+                    advanceBtn.classList.add('btn-success');
+            }
         } else {
             footerOpts.innerHTML = '';
             advanceBtn.innerHTML = "NEXT ROUND >>";
@@ -769,6 +894,40 @@ function renderBracketRound() {
             advanceBtn.classList.add('btn-success');
         }
     }
+}
+
+
+function bracketSwitchMode(mode) {
+    state.bracketMode = mode;
+
+    // Update Tab UI
+    const tabMain = document.getElementById('tab-bracket-main');
+    const tabCons = document.getElementById('tab-bracket-consolation');
+
+    if (mode === 'main') {
+        tabMain.classList.add('active', 'fw-bold', 'text-primary');
+        tabMain.classList.remove('text-muted');
+        tabCons.classList.remove('active', 'fw-bold', 'text-primary');
+        tabCons.classList.add('text-muted');
+    } else {
+        tabCons.classList.add('active', 'fw-bold', 'text-success'); // Green for Second Try?
+        tabCons.classList.remove('text-muted');
+        tabMain.classList.remove('active', 'fw-bold', 'text-primary');
+        tabMain.classList.add('text-muted');
+    }
+
+    // Ensure data structure exists
+    const gameId = state.currentStation.id;
+    const bracket = state.bracketData[gameId];
+
+    if (mode === 'consolation' && !bracket.consolation_rounds) {
+        bracket.consolation_rounds = [{ name: "Consolation Rd 1", pool: [], heats: [] }];
+    }
+
+    // Reset to Round 1 of that mode
+    state.currentRoundIdx = 0;
+
+    renderBracketRound();
 }
 
 // 1. Unified Bye Logic
@@ -858,51 +1017,147 @@ function bracketQuickSave(heatIdx) {
 
 function bracketAdvanceRound() {
     const gameId = state.currentStation.id;
-    const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
+    const bracket = state.bracketData[gameId];
 
-    // 1. Calculate Winners/Losers (Relaxed Logic)
+    // 1. Identify which list we are currently playing
+    let currentRoundList;
+    if (state.bracketMode === 'consolation') {
+        currentRoundList = bracket.consolation_rounds;
+    } else {
+        currentRoundList = bracket.rounds;
+    }
+
+    const round = currentRoundList[state.currentRoundIdx];
+
+    // 2. Calculate Winners, Losers, AND Pending
     const winners = [];
     const losers = [];
+    const pending = [];
 
+    // Check Heats
     round.heats.forEach(h => {
-        // We now iterate ALL teams in the heat, ignoring the 'complete' status.
-        // This allows "Quick Toggles" on Pending heats to work.
-        h.teams.forEach(eid => {
-            const res = h.results[eid];
-            if (res && res.advance) {
-                winners.push(eid);
-            } else {
-                // If they have no result OR advance is false, they are a loser
-                losers.push(eid);
-            }
-        });
+        if (!h.complete) {
+            // Entire heat is pending
+            pending.push(...h.teams);
+        } else {
+            // Heat is done, check individual teams
+            h.teams.forEach(eid => {
+                const res = h.results[eid];
+                if (res && res.advance) {
+                    winners.push(eid);
+                } else if (res && (res.advance === false)) {
+                    losers.push(eid);
+                } else {
+                    losers.push(eid);
+                }
+            });
+        }
     });
+
+    // Check Pool (Teams who haven't even raced yet!)
+    pending.push(...round.pool);
 
     if (winners.length === 0) return alert("No teams marked to advance! Select winners using the arrows (⏩).");
 
-    // 2. DETECT END GAME
+    // 3. DETECT END GAME (Podium Logic)
     const finalCheckbox = document.getElementById('chk-is-final');
     const isExplicitFinal = finalCheckbox ? finalCheckbox.checked : false;
-
-    // Logic: Explicit Checkbox OR Implicit Single Winner
     const shouldFinish = (finalCheckbox && isExplicitFinal) || (!finalCheckbox && winners.length === 1);
 
     if (shouldFinish) {
-        openPodiumModal(winners, losers);
+        // Collect Manual Ranks from Heats
+        const manualRanks = {};
+        round.heats.forEach(h => {
+            h.teams.forEach(eid => {
+                if (h.results[eid] && h.results[eid].rank) {
+                    manualRanks[eid] = h.results[eid].rank;
+                }
+            });
+        });
+        openPodiumModal(winners, losers, manualRanks);
         return;
     }
 
-    // 3. Normal Advance (Create Next Round)
-    if (!confirm(`Create Round ${state.currentRoundIdx + 2} with ${winners.length} advancing teams?`)) return;
+    // 4. SILENT CONSOLATION LOGIC (Automatic)
+    if (state.bracketMode === 'main' && losers.length > 0) {
+        if (!bracket.consolation_rounds) {
+            bracket.consolation_rounds = [{ name: "Consolation Rd 1", pool: [], heats: [] }];
+        }
+        const consRoundIdx = Math.max(0, bracket.consolation_rounds.length - 1);
+        const consRound = bracket.consolation_rounds[consRoundIdx];
 
-    state.bracketData[gameId].rounds.push({
-        name: `Round ${state.currentRoundIdx + 2}`,
-        pool: winners,
-        heats: []
-    });
+        const existing = new Set([...consRound.pool, ...consRound.heats.flatMap(h => h.teams)]);
+        const newRecruits = losers.filter(id => !existing.has(id));
+
+        if (newRecruits.length > 0) {
+            consRound.pool.push(...newRecruits);
+        }
+    }
+
+    // 5. SMART ADVANCE LOGIC
+    const nextRoundIdx = state.currentRoundIdx + 1;
+    const nextRoundExists = nextRoundIdx < currentRoundList.length;
+
+    // Prepare Warning Message (if needed)
+    let warningMsg = "";
+    if (pending.length > 0) {
+        warningMsg = `⚠️ NOTE: ${pending.length} teams in this round are still pending (in pool or active heats). You can advance now and come back for them later.`;
+    }
+
+    if (nextRoundExists) {
+        // SCENARIO A: Next Round already exists.
+        // We do NOT create a new one. We just update the existing one with any NEW winners.
+        const nextRound = currentRoundList[nextRoundIdx];
+
+        const existingPool = new Set([...nextRound.pool, ...nextRound.heats.flatMap(h => h.teams)]);
+        const newAdvancers = winners.filter(id => !existingPool.has(id));
+
+        if (newAdvancers.length > 0) {
+            nextRound.pool.push(...newAdvancers);
+            if (warningMsg) {
+                alert(`✅ Added ${newAdvancers.length} new team(s) to ${nextRound.name}.\n\n` + warningMsg);
+            }
+        } else if (warningMsg) {
+            // Just show the warning if we are navigating forward
+            alert(warningMsg);
+        }
+
+    } else {
+        // SCENARIO B: Create New Round
+        // User requested: No confirmation dialog, just "OK" alert if there is a warning.
+
+        if (warningMsg) {
+            alert(warningMsg); // Pauses execution until OK is clicked, then proceeds.
+        }
+
+        currentRoundList.push({
+            name: `${state.bracketMode === 'consolation' ? 'Consolation ' : ''}Round ${nextRoundIdx + 1}`,
+            pool: winners,
+            heats: []
+        });
+    }
+
+    // Finalize
     saveBracketState();
     state.currentRoundIdx++;
     renderBracketRound();
+}
+
+function bracketUpdateRank(heatIdx, eid, val) {
+    const gameId = state.currentStation.id;
+    const round = state.bracketData[gameId].rounds[state.currentRoundIdx];
+    const heat = round.heats[heatIdx];
+
+    if (!heat.results[eid]) heat.results[eid] = {};
+
+    // Save the rank (convert to number if possible)
+    heat.results[eid].rank = val ? parseInt(val) : null;
+
+    // Auto-mark as "Advance" if Rank is 1 (Winner) just for internal consistency,
+    // though the Final Round logic ignores 'advance' flags now.
+    heat.results[eid].advance = (heat.results[eid].rank === 1);
+
+    saveBracketState();
 }
 
 function bracketToggleAdvance(heatIdx, eid, event) {
@@ -1044,15 +1299,167 @@ function bracketSaveHeat() {
     navigate('bracketRound');
 }
 
+// --- PODIUM / END GAME LOGIC (Auto-Ranking) ---
+
+function openPodiumModal(winners, losers, manualRanks = {} ) {
+    const gameId = state.currentStation.id;
+    const rounds = state.bracketData[gameId].rounds;
+
+    // 1. Calculate Standings
+    const standings = [];
+
+    // A. Add Final Round results
+    // If we have manual ranks, use them!
+    if (Object.keys(manualRanks).length > 0) {
+        // Add everyone who has a rank
+        Object.keys(manualRanks).forEach(eid => {
+            standings.push({
+                id: eid,
+                rank: manualRanks[eid],
+                note: `Ranked ${manualRanks[eid]}`
+            });
+        });
+
+        // Add anyone else in the final round as generic "Finalist" if they missed a rank
+        const finalParticipants = [...winners, ...losers];
+        finalParticipants.forEach(id => {
+            if (!manualRanks[id]) {
+                 standings.push({ id, rank: 99, note: "Finalist (Unranked)" });
+            }
+        });
+
+    } else {
+        // Fallback to old Winner/Loser logic
+        winners.forEach(id => standings.push({ id, rank: 1, note: "Winner" }));
+        losers.forEach(id => standings.push({ id, rank: 2, note: "Finalist" }));
+    }
+
+    // B. Walk backwards (Unchanged logic for previous eliminations...)
+    let currentRank = 1 + winners.length + losers.length;
+
+    // Iterate backwards from the Semi-Finals (rounds.length - 2) down to Round 1
+    for (let i = rounds.length - 2; i >= 0; i--) {
+        const round = rounds[i];
+        const nextRound = rounds[i+1];
+
+        // Find teams in THIS round who did NOT appear in the NEXT round's pool or heats
+        // (i.e., they were eliminated here)
+        const advancers = new Set([
+            ...nextRound.pool,
+            ...nextRound.heats.flatMap(h => h.teams)
+        ]);
+
+        const roundParticipants = [
+            ...round.pool,
+            ...round.heats.flatMap(h => h.teams)
+        ];
+
+        const eliminated = roundParticipants.filter(id => !advancers.has(id));
+
+        eliminated.forEach(id => {
+            // Check if they were already added (e.g. via scratched/bye weirdness)
+            if (!standings.find(s => s.id === id)) {
+                standings.push({
+                    id,
+                    rank: currentRank,
+                    note: `Eliminated in ${round.name}`
+                });
+            }
+        });
+
+        // Increment rank for the next batch (Ties share the same rank)
+        // e.g. If 2 teams were eliminated in Semis, the next group is 5th place.
+        currentRank += eliminated.length;
+    }
+
+    // Sort by Rank
+    standings.sort((a,b) => a.rank - b.rank);
+
+    // 2. Render Table
+    const tbody = document.getElementById('podium-list');
+    tbody.innerHTML = standings.map(s => {
+        const e = state.entities.find(x => x.id === s.id);
+        const label = formatEntityLabel(e);
+
+        return `
+        <tr data-id="${s.id}">
+            <td class="ps-3 fw-bold">${label}</td>
+            <td class="text-muted small">${s.note}</td>
+            <td class="text-center">
+                <input type="number" class="form-control text-center fw-bold mx-auto"
+                       value="${s.rank}" min="1" style="width: 70px;">
+            </td>
+        </tr>`;
+    }).join('');
+
+    togglePodiumModal(true);
+}
+
+function togglePodiumModal(show) {
+    const m = document.getElementById('podium-modal');
+    if (show) m.classList.remove('hidden');
+    else m.classList.add('hidden');
+}
+
+function bracketSubmitPodium() {
+    const s = state.currentStation;
+
+    // Scrape data from the table rows
+    const rows = document.querySelectorAll('#podium-list tr');
+    const results = [];
+
+    rows.forEach(row => {
+        const eid = row.getAttribute('data-id');
+        const rankInput = row.querySelector('input');
+        const rank = parseInt(rankInput.value);
+
+        if (eid && rank) {
+            results.push({
+                entity_id: eid,
+                rank: rank
+            });
+        }
+    });
+
+    if (results.length === 0) return alert("No results found.");
+
+    // Submit Scores to Server
+    results.forEach(r => {
+        const packet = {
+            uuid: crypto.randomUUID(),
+            game_id: s.id,
+            entity_id: r.entity_id,
+            score_payload: {
+                rank: r.rank,
+                // No points calculated here. Official determines that later.
+                notes: `Tournament Place: ${r.rank}`
+            },
+            timestamp: Date.now(),
+            judge_name: els.judgeName.value,
+            judge_email: els.judgeEmail.value,
+            judge_unit: els.judgeUnit.value
+        };
+        syncManager.addToQueue(packet);
+    });
+
+    if (state.isOnline) syncManager.sync();
+
+    togglePodiumModal(false);
+    alert("🏆 Results Submitted! Thank you.");
+
+    navigate('home');
+}
+
+
 // Don't forget to export the new helper!
 window.app = {
     init, navigate, handleBack, refreshData, selectStation, selectEntity,
     submitScore, setMode, promptNewEntity, toggleJudgeModal, saveJudgeInfo,
     saveDraft, combineTime, resetAppData, bracketQuickSave, bracketScratchTeam,
-    // Bracket Exports
+    openPodiumModal, togglePodiumModal, bracketSubmitPodium, bracketCreateHeat,
     bracketSelectAll, bracketStartEvent, bracketCreateHeat, bracketOpenHeat,
     bracketSaveHeat, bracketAdvanceRound, bracketRenameRound, bracketToggleAdvance,
-    bracketGrantBye, toggleHeatAdvance
+    bracketSwitchMode, bracketGrantBye, toggleHeatAdvance, bracketUpdateRank
 };
 
 function bracketRenameRound() {
